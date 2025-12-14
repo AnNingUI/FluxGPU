@@ -1,25 +1,31 @@
 # @flux/arch-validator
 
-Static analysis tool for enforcing architectural constraints in FluxGPU.
+Static analysis tool for validating FluxGPU's architectural constraints.
 
-## Purpose
+## Overview
 
-This package validates that the FluxGPU codebase maintains its architectural integrity by enforcing:
+This package enforces the hexagonal architecture rules at build time:
 
-1. **No Global Access in Domain Packages**: Domain packages (contracts, core, dsl) must not access platform-specific globals like `window`, `document`, `navigator`, or `Worker`.
+- Domain packages cannot import from infrastructure
+- Bridge layer can only depend on contracts
+- Framework bindings follow proper dependency direction
 
-2. **Maximum Inheritance Depth**: Class inheritance depth must not exceed 1 level, promoting composition over inheritance.
+## Installation
+
+```bash
+pnpm add -D @flux/arch-validator
+```
 
 ## Usage
 
-### Command Line
+### CLI
 
 ```bash
-# Run validation
-pnpm validate:arch
+# Validate architecture
+npx flux-validate
 
-# Or directly
-node packages/arch-validator/dist/cli.js
+# Or via pnpm script
+pnpm validate:arch
 ```
 
 ### Programmatic
@@ -27,54 +33,48 @@ node packages/arch-validator/dist/cli.js
 ```typescript
 import { validateArchitecture } from '@flux/arch-validator';
 
-const isValid = await validateArchitecture({
+const result = validateArchitecture({
   domainPackages: ['packages/contracts', 'packages/core', 'packages/dsl'],
-  rootDir: process.cwd()
+  bridgePackages: ['packages/protocol'],
+  infraPackages: ['packages/engine', 'packages/host-browser'],
 });
 
-if (!isValid) {
-  process.exit(1);
+if (!result.valid) {
+  console.error('Violations:', result.violations);
 }
 ```
 
-## Validators
+## Rules Enforced
 
-### GlobalAccessValidator
+| Rule | Description |
+|------|-------------|
+| Domain Isolation | `@flux/core`, `@flux/dsl` cannot import from engine/host |
+| Contract Purity | `@flux/contracts` has zero dependencies |
+| Bridge Independence | `@flux/protocol` only depends on contracts |
+| Dependency Direction | Dependencies flow inward toward domain |
 
-Scans TypeScript files for references to forbidden global variables:
-- `window`, `document`, `navigator`
-- `Worker`, `localStorage`, `sessionStorage`
-- `location`, `history`, `fetch`
-- `XMLHttpRequest`, `WebSocket`
-- `Blob`, `File`, `FileReader`
+## Output
 
-These globals should only be accessed in infrastructure packages (host-*, engine) through the adapter pattern.
+```
+FluxGPU Architectural Constraint Validator
 
-### InheritanceValidator
+Validating domain packages:
+  - packages/contracts
+  - packages/core
+  - packages/dsl
 
-Uses TypeScript's AST to analyze class hierarchies and ensure inheritance depth does not exceed 1 level. This enforces the architectural principle of "composition over inheritance."
-
-### DependencyValidator
-
-Validates package dependencies across the monorepo to enforce architectural layering:
-
-1. **Contracts Package**: Must have zero runtime dependencies (only devDependencies allowed)
-2. **Domain Packages** (core, dsl): Must depend only on `@flux/contracts`
-3. **Protocol Package**: Must depend only on `@flux/contracts`
-4. **Infrastructure Packages** (engine, host-*): Must depend only on `@flux/contracts` and `@flux/protocol`
-
-This ensures dependencies flow inward toward the domain layer, preventing circular dependencies and maintaining clean architecture boundaries.
+✓ All architectural constraints validated successfully
+```
 
 ## Integration
 
-The validator is integrated into the build process via the `prebuild` script in the root package.json. This ensures architectural constraints are validated before every build.
+Add to your build pipeline:
 
-## Requirements
-
-Validates:
-- Requirement 1.2: Dependencies must point only inward toward the domain layer
-- Requirement 1.3: Contracts package must have zero runtime dependencies
-- Requirement 1.4: Core package must depend only on contracts
-- Requirement 1.5: Infrastructure packages must depend on contracts and protocol only
-- Requirement 10.1: Domain packages must not access global variables
-- Requirement 10.3: Class inheritance depth must not exceed one level
+```json
+{
+  "scripts": {
+    "prebuild": "pnpm validate:arch",
+    "build": "tsc -b"
+  }
+}
+```
