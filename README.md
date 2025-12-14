@@ -19,18 +19,18 @@ A modern WebGPU framework with Hexagonal Architecture, type-safe shader DSL, and
 └─────────────────────────────────────────────────────────────┘
                               │
 ┌─────────────────────────────────────────────────────────────┐
-│                  Infrastructure Layer                        │
-│              @flux/engine    @flux/host-browser              │
+│                  Infrastructure Layer                       │
+│              @flux/engine    @flux/host-browser             │
 └─────────────────────────────────────────────────────────────┘
                               │
 ┌─────────────────────────────────────────────────────────────┐
-│                     Bridge Layer                             │
-│                      @flux/protocol                          │
+│                     Bridge Layer                            │
+│                      @flux/protocol                         │
 └─────────────────────────────────────────────────────────────┘
                               │
 ┌─────────────────────────────────────────────────────────────┐
-│                     Domain Layer                             │
-│           @flux/contracts  @flux/core  @flux/dsl             │
+│                     Domain Layer                            │
+│           @flux/contracts  @flux/core  @flux/dsl            │
 └─────────────────────────────────────────────────────────────┘
 ```
 
