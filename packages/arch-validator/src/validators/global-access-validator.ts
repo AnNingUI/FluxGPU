@@ -100,8 +100,10 @@ export class GlobalAccessValidator implements Validator {
   }
 
   private isInTypeContext(line: string, position: number): boolean {
-    // Check if the match is in a type annotation context
     const beforeMatch = line.substring(0, position);
+    const afterMatch = line.substring(position);
+    const matchedWord = afterMatch.match(/^\w+/)?.[0] || '';
+    const afterWord = afterMatch.substring(matchedWord.length);
     
     // Check for interface/type definitions
     if (/\b(interface|type)\s+\w+/.test(beforeMatch)) {
@@ -118,15 +120,18 @@ export class GlobalAccessValidator implements Validator {
       return true;
     }
     
-    // Check if it's an object property name (e.g., { location: number })
-    // Pattern: word followed by colon (property definition)
-    const afterMatch = line.substring(position);
-    if (/^\w+\s*:/.test(afterMatch)) {
+    // Check if it's an object property name followed by colon (e.g., { location: number })
+    if (/^\s*:/.test(afterWord)) {
       return true;
     }
     
-    // Check if inside object literal or interface body
+    // Check if inside object literal or interface body (after { or ,)
     if (/[{,]\s*$/.test(beforeMatch.trim())) {
+      return true;
+    }
+    
+    // Check if it's a property in a type/interface (has semicolon or comma after type)
+    if (/^\s*:\s*\w+[\s;,}]/.test(afterWord)) {
       return true;
     }
     
