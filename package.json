@@ -1,0 +1,27 @@
+{
+  "name": "fluxgpu",
+  "version": "5.0.0",
+  "private": true,
+  "description": "WebGPU framework with Hexagonal Architecture",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint",
+    "clean": "pnpm -r clean",
+    "validate:arch": "pnpm --filter @flux/arch-validator build && node packages/arch-validator/dist/cli.js",
+    "prebuild": "pnpm validate:arch",
+    "edev:vanilla": "pnpm --filter \"@flux/example-vanilla\" dev",
+    "edev:react": "pnpm --filter \"@flux/example-react\" dev",
+    "edev:vue": "pnpm --filter \"@flux/example-vue\" dev",
+    "edev:preact": "pnpm --filter \"@flux/example-preact\" dev",
+    "edev:solid": "pnpm --filter \"@flux/example-solid\" dev"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vitest": "^1.0.4"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}

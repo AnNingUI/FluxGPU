@@ -1,0 +1,30 @@
+{
+  "name": "@flux/solid",
+  "version": "5.0.0",
+  "description": "SolidJS bindings for FluxGPU",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@flux/dsl": "workspace:*",
+    "@flux/engine": "workspace:*",
+    "@webgpu/types": "^0.1.40"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.8.0"
+  },
+  "devDependencies": {
+    "solid-js": "^1.8.0",
+    "typescript": "^5.3.3"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "@flux/example-react",
+  "version": "1.0.0",
+  "private": true,
+  "description": "FluxGPU React Demo",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@flux/dsl": "workspace:*",
+    "@flux/engine": "workspace:*",
+    "@flux/react": "workspace:*",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.2.0",
+    "@webgpu/types": "^0.1.67",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.0"
+  }
+}

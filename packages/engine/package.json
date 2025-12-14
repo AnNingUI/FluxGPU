@@ -1,0 +1,29 @@
+{
+  "name": "@flux/engine",
+  "version": "5.0.0",
+  "description": "WebGPU executor running inside Worker",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rm -rf dist",
+    "test": "vitest --run"
+  },
+  "dependencies": {
+    "@flux/contracts": "workspace:*",
+    "@flux/dsl": "workspace:*",
+    "@flux/protocol": "workspace:*",
+    "@webgpu/types": "^0.1.40"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vitest": "^1.0.4"
+  }
+}

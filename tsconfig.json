@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "lib": ["ES2022"],
+    "moduleResolution": "bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "composite": true,
+    "incremental": true,
+    "resolveJsonModule": true
+  },
+  "references": [
+    { "path": "./packages/contracts" },
+    { "path": "./packages/dsl" },
+    { "path": "./packages/core" },
+    { "path": "./packages/protocol" },
+    { "path": "./packages/engine" },
+    { "path": "./packages/host-browser" },
+    { "path": "./packages/arch-validator" },
+    { "path": "./packages/react" },
+    { "path": "./packages/vue" },
+    { "path": "./packages/solid" },
+    { "path": "./packages/preact" }
+  ],
+  "files": []
+}

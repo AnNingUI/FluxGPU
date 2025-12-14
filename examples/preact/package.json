@@ -1,0 +1,24 @@
+{
+  "name": "@flux/example-preact",
+  "version": "1.0.0",
+  "private": true,
+  "description": "FluxGPU Preact Demo",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@flux/dsl": "workspace:*",
+    "@flux/engine": "workspace:*",
+    "@flux/preact": "workspace:*",
+    "preact": "^10.19.0"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.8.0",
+    "@webgpu/types": "^0.1.67",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.0"
+  }
+}
