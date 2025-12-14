@@ -1,7 +1,22 @@
 {
   "name": "@flux/contracts",
   "version": "5.0.0",
-  "description": "Pure TypeScript interfaces defining all ports",
+  "description": "Pure TypeScript interfaces and type definitions for FluxGPU - zero dependencies",
+  "author": "AnNingUI",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnNingUI/FluxGPU.git",
+    "directory": "packages/contracts"
+  },
+  "keywords": [
+    "fluxgpu",
+    "webgpu",
+    "typescript",
+    "interfaces",
+    "contracts",
+    "types"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -11,10 +26,15 @@
       "default": "./dist/index.js"
     }
   },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc -b",
     "clean": "rm -rf dist",
-    "test": "vitest --run"
+    "test": "vitest --run",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "typescript": "^5.3.3",

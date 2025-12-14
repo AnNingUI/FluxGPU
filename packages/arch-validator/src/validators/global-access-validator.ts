@@ -118,6 +118,18 @@ export class GlobalAccessValidator implements Validator {
       return true;
     }
     
+    // Check if it's an object property name (e.g., { location: number })
+    // Pattern: word followed by colon (property definition)
+    const afterMatch = line.substring(position);
+    if (/^\w+\s*:/.test(afterMatch)) {
+      return true;
+    }
+    
+    // Check if inside object literal or interface body
+    if (/[{,]\s*$/.test(beforeMatch.trim())) {
+      return true;
+    }
+    
     return false;
   }
 }

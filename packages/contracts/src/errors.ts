@@ -58,27 +58,18 @@ export class FluxError extends Error {
 }
 
 // ============================================================================
-// Validation Errors
+// Validation Errors - All extend FluxError directly (max depth = 1)
 // ============================================================================
-
-/**
- * Error thrown when validation fails
- */
-export class ValidationError extends FluxError {
-  constructor(message: string, context?: Record<string, unknown>) {
-    super(message, 'VALIDATION_ERROR', context);
-    this.name = 'ValidationError';
-  }
-}
 
 /**
  * Error thrown when a circular dependency is detected
  */
-export class CircularDependencyError extends ValidationError {
+export class CircularDependencyError extends FluxError {
   constructor(cycle: string[], context?: Record<string, unknown>) {
     const cycleStr = cycle.join(' -> ');
     super(
       `Circular dependency detected: ${cycleStr}`,
+      'VALIDATION_ERROR',
       { ...context, cycle }
     );
     this.name = 'CircularDependencyError';
@@ -88,10 +79,11 @@ export class CircularDependencyError extends ValidationError {
 /**
  * Error thrown when a resource reference is invalid
  */
-export class InvalidResourceError extends ValidationError {
+export class InvalidResourceError extends FluxError {
   constructor(resourceId: string, reason: string, context?: Record<string, unknown>) {
     super(
       `Invalid resource reference '${resourceId}': ${reason}`,
+      'VALIDATION_ERROR',
       { ...context, resourceId, reason }
     );
     this.name = 'InvalidResourceError';
@@ -101,34 +93,25 @@ export class InvalidResourceError extends ValidationError {
 /**
  * Error thrown when graph topology is invalid
  */
-export class GraphTopologyError extends ValidationError {
+export class GraphTopologyError extends FluxError {
   constructor(message: string, context?: Record<string, unknown>) {
-    super(`Graph topology error: ${message}`, context);
+    super(`Graph topology error: ${message}`, 'VALIDATION_ERROR', context);
     this.name = 'GraphTopologyError';
   }
 }
 
 // ============================================================================
-// Runtime Errors
+// Runtime Errors - All extend FluxError directly (max depth = 1)
 // ============================================================================
-
-/**
- * Error thrown during runtime operations
- */
-export class RuntimeError extends FluxError {
-  constructor(message: string, context?: Record<string, unknown>) {
-    super(message, 'RUNTIME_ERROR', context);
-    this.name = 'RuntimeError';
-  }
-}
 
 /**
  * Error thrown when GPU device is lost
  */
-export class DeviceLostError extends RuntimeError {
+export class DeviceLostError extends FluxError {
   constructor(reason: string, context?: Record<string, unknown>) {
     super(
       `GPU device lost: ${reason}`,
+      'RUNTIME_ERROR',
       { ...context, reason }
     );
     this.name = 'DeviceLostError';
@@ -138,12 +121,12 @@ export class DeviceLostError extends RuntimeError {
 /**
  * Error thrown when out of GPU memory
  */
-export class OutOfMemoryError extends RuntimeError {
+export class OutOfMemoryError extends FluxError {
   constructor(requested: number, available?: number, context?: Record<string, unknown>) {
     const msg = available !== undefined
       ? `Out of memory: requested ${requested} bytes, ${available} bytes available`
       : `Out of memory: requested ${requested} bytes`;
-    super(msg, { ...context, requested, available });
+    super(msg, 'RUNTIME_ERROR', { ...context, requested, available });
     this.name = 'OutOfMemoryError';
   }
 }
@@ -151,10 +134,11 @@ export class OutOfMemoryError extends RuntimeError {
 /**
  * Error thrown when resource disposal fails
  */
-export class ResourceDisposalError extends RuntimeError {
+export class ResourceDisposalError extends FluxError {
   constructor(resourceId: string, reason: string, context?: Record<string, unknown>) {
     super(
       `Failed to dispose resource '${resourceId}': ${reason}`,
+      'RUNTIME_ERROR',
       { ...context, resourceId, reason }
     );
     this.name = 'ResourceDisposalError';
@@ -164,10 +148,11 @@ export class ResourceDisposalError extends RuntimeError {
 /**
  * Error thrown when command execution fails
  */
-export class CommandExecutionError extends RuntimeError {
+export class CommandExecutionError extends FluxError {
   constructor(commandId: string, reason: string, context?: Record<string, unknown>) {
     super(
       `Command execution failed for '${commandId}': ${reason}`,
+      'RUNTIME_ERROR',
       { ...context, commandId, reason }
     );
     this.name = 'CommandExecutionError';
@@ -177,9 +162,9 @@ export class CommandExecutionError extends RuntimeError {
 /**
  * Error thrown during initialization
  */
-export class InitializationError extends RuntimeError {
+export class InitializationError extends FluxError {
   constructor(message: string, context?: Record<string, unknown>) {
-    super(`Initialization failed: ${message}`, context);
+    super(`Initialization failed: ${message}`, 'RUNTIME_ERROR', context);
     this.name = 'InitializationError';
   }
 }
@@ -187,10 +172,11 @@ export class InitializationError extends RuntimeError {
 /**
  * Error thrown when an operation is attempted before initialization
  */
-export class NotInitializedError extends RuntimeError {
+export class NotInitializedError extends FluxError {
   constructor(operation: string, context?: Record<string, unknown>) {
     super(
       `Cannot perform operation '${operation}': system not initialized`,
+      'RUNTIME_ERROR',
       { ...context, operation }
     );
     this.name = 'NotInitializedError';
@@ -198,25 +184,15 @@ export class NotInitializedError extends RuntimeError {
 }
 
 // ============================================================================
-// Protocol Errors
+// Protocol Errors - All extend FluxError directly (max depth = 1)
 // ============================================================================
-
-/**
- * Error thrown during protocol operations
- */
-export class ProtocolError extends FluxError {
-  constructor(message: string, context?: Record<string, unknown>) {
-    super(message, 'PROTOCOL_ERROR', context);
-    this.name = 'ProtocolError';
-  }
-}
 
 /**
  * Error thrown when serialization fails
  */
-export class SerializationError extends ProtocolError {
+export class SerializationError extends FluxError {
   constructor(reason: string, context?: Record<string, unknown>) {
-    super(`Serialization failed: ${reason}`, context);
+    super(`Serialization failed: ${reason}`, 'PROTOCOL_ERROR', context);
     this.name = 'SerializationError';
   }
 }
@@ -224,9 +200,9 @@ export class SerializationError extends ProtocolError {
 /**
  * Error thrown when deserialization fails
  */
-export class DeserializationError extends ProtocolError {
+export class DeserializationError extends FluxError {
   constructor(reason: string, context?: Record<string, unknown>) {
-    super(`Deserialization failed: ${reason}`, context);
+    super(`Deserialization failed: ${reason}`, 'PROTOCOL_ERROR', context);
     this.name = 'DeserializationError';
   }
 }
@@ -234,10 +210,11 @@ export class DeserializationError extends ProtocolError {
 /**
  * Error thrown when buffer overflow occurs
  */
-export class BufferOverflowError extends ProtocolError {
+export class BufferOverflowError extends FluxError {
   constructor(required: number, available: number, context?: Record<string, unknown>) {
     super(
       `Buffer overflow: required ${required} bytes, only ${available} bytes available`,
+      'PROTOCOL_ERROR',
       { ...context, required, available }
     );
     this.name = 'BufferOverflowError';
@@ -247,10 +224,11 @@ export class BufferOverflowError extends ProtocolError {
 /**
  * Error thrown when an invalid opcode is encountered
  */
-export class InvalidOpcodeError extends ProtocolError {
+export class InvalidOpcodeError extends FluxError {
   constructor(opcode: number, context?: Record<string, unknown>) {
     super(
       `Invalid opcode: ${opcode}`,
+      'PROTOCOL_ERROR',
       { ...context, opcode }
     );
     this.name = 'InvalidOpcodeError';
@@ -260,9 +238,9 @@ export class InvalidOpcodeError extends ProtocolError {
 /**
  * Error thrown when a message is corrupted
  */
-export class CorruptedMessageError extends ProtocolError {
+export class CorruptedMessageError extends FluxError {
   constructor(reason: string, context?: Record<string, unknown>) {
-    super(`Corrupted message: ${reason}`, context);
+    super(`Corrupted message: ${reason}`, 'PROTOCOL_ERROR', context);
     this.name = 'CorruptedMessageError';
   }
 }
@@ -318,8 +296,9 @@ export class ErrorRecoveryContext {
     }
 
     if (errors.length > 0) {
-      throw new RuntimeError(
+      throw new FluxError(
         `Cleanup failed with ${errors.length} error(s)`,
+        'RUNTIME_ERROR',
         { errors: errors.map(e => e.message) }
       );
     }
@@ -340,8 +319,9 @@ export class ErrorRecoveryContext {
     }
 
     if (errors.length > 0) {
-      throw new RuntimeError(
+      throw new FluxError(
         `State recovery failed with ${errors.length} error(s)`,
+        'RUNTIME_ERROR',
         { errors: errors.map(e => e.message) }
       );
     }

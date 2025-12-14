@@ -2,12 +2,37 @@
   "name": "fluxgpu",
   "version": "5.0.0",
   "private": true,
-  "description": "WebGPU framework with Hexagonal Architecture",
+  "description": "Modern WebGPU framework with Hexagonal Architecture, type-safe shader DSL, and first-class framework bindings",
+  "author": "AnNingUI",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnNingUI/FluxGPU.git"
+  },
+  "homepage": "https://github.com/AnNingUI/FluxGPU#readme",
+  "bugs": {
+    "url": "https://github.com/AnNingUI/FluxGPU/issues"
+  },
+  "keywords": [
+    "webgpu",
+    "gpu",
+    "graphics",
+    "compute",
+    "shader",
+    "wgsl",
+    "dsl",
+    "typescript",
+    "react",
+    "vue",
+    "solid",
+    "preact"
+  ],
   "scripts": {
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
     "clean": "pnpm -r clean",
+    "typecheck": "pnpm -r typecheck",
     "validate:arch": "pnpm --filter @flux/arch-validator build && node packages/arch-validator/dist/cli.js",
     "prebuild": "pnpm validate:arch",
     "edev:vanilla": "pnpm --filter \"@flux/example-vanilla\" dev",

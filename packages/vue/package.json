@@ -1,7 +1,25 @@
 {
   "name": "@flux/vue",
   "version": "5.0.0",
-  "description": "Vue bindings for FluxGPU",
+  "description": "Vue 3 composables and components for FluxGPU - Composition API integration",
+  "author": "AnNingUI",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnNingUI/FluxGPU.git",
+    "directory": "packages/vue"
+  },
+  "keywords": [
+    "fluxgpu",
+    "webgpu",
+    "vue",
+    "vue3",
+    "composables",
+    "composition-api",
+    "components",
+    "gpu",
+    "graphics"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -11,9 +29,14 @@
       "default": "./dist/index.js"
     }
   },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc -b",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@flux/dsl": "workspace:*",

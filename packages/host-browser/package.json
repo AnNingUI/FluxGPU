@@ -1,7 +1,22 @@
 {
   "name": "@flux/host-browser",
   "version": "5.0.0",
-  "description": "Browser runtime adapter with Workers and DOM integration",
+  "description": "Browser runtime adapter for FluxGPU - Workers, DOM integration, and canvas management",
+  "author": "AnNingUI",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnNingUI/FluxGPU.git",
+    "directory": "packages/host-browser"
+  },
+  "keywords": [
+    "fluxgpu",
+    "webgpu",
+    "browser",
+    "worker",
+    "dom",
+    "canvas"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -11,10 +26,15 @@
       "default": "./dist/index.js"
     }
   },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc -b",
     "clean": "rm -rf dist",
-    "test": "vitest --run"
+    "test": "vitest --run",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@flux/contracts": "workspace:*",

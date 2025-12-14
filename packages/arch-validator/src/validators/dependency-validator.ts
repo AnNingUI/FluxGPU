@@ -112,16 +112,27 @@ export class DependencyValidator implements Validator {
           rule: 'protocol-dependencies'
         });
       }
-    } else if (pkg.name.startsWith('@flux/host-') || pkg.name === '@flux/engine') {
-      // Infrastructure packages must depend only on contracts and protocol
+    } else if (pkg.name === '@flux/engine') {
+      // Engine can depend on contracts, protocol, and dsl (for type-safe uniform buffers)
+      const allowedDeps = ['@flux/contracts', '@flux/protocol', '@flux/dsl'];
+      const invalidDeps = pkg.dependencies.filter(dep => !allowedDeps.includes(dep));
+      if (invalidDeps.length > 0) {
+        errors.push({
+          file: pkg.path,
+          message: `Engine package must depend only on @flux/contracts, @flux/protocol, and @flux/dsl, but found: ${invalidDeps.join(', ')}`,
+          rule: 'engine-dependencies'
+        });
+      }
+    } else if (pkg.name.startsWith('@flux/host-')) {
+      // Host packages must depend only on contracts and protocol
       const invalidDeps = pkg.dependencies.filter(
         dep => dep !== '@flux/contracts' && dep !== '@flux/protocol'
       );
       if (invalidDeps.length > 0) {
         errors.push({
           file: pkg.path,
-          message: `Infrastructure package ${pkg.name} must depend only on @flux/contracts and @flux/protocol, but found: ${invalidDeps.join(', ')}`,
-          rule: 'infrastructure-dependencies'
+          message: `Host package ${pkg.name} must depend only on @flux/contracts and @flux/protocol, but found: ${invalidDeps.join(', ')}`,
+          rule: 'host-dependencies'
         });
       }
     }

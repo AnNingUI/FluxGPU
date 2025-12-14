@@ -1,7 +1,25 @@
 {
   "name": "@flux/solid",
   "version": "5.0.0",
-  "description": "SolidJS bindings for FluxGPU",
+  "description": "SolidJS primitives and components for FluxGPU - reactive GPU programming",
+  "author": "AnNingUI",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnNingUI/FluxGPU.git",
+    "directory": "packages/solid"
+  },
+  "keywords": [
+    "fluxgpu",
+    "webgpu",
+    "solidjs",
+    "solid",
+    "reactive",
+    "primitives",
+    "components",
+    "gpu",
+    "graphics"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -11,9 +29,14 @@
       "default": "./dist/index.js"
     }
   },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc -b",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@flux/dsl": "workspace:*",

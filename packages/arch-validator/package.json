@@ -1,17 +1,37 @@
 {
   "name": "@flux/arch-validator",
   "version": "5.0.0",
-  "description": "Static analysis tool for architectural constraint validation",
+  "description": "Static analysis tool for validating FluxGPU hexagonal architecture constraints",
+  "author": "AnNingUI",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnNingUI/FluxGPU.git",
+    "directory": "packages/arch-validator"
+  },
+  "keywords": [
+    "fluxgpu",
+    "architecture",
+    "validation",
+    "static-analysis",
+    "hexagonal",
+    "cli"
+  ],
   "type": "module",
   "bin": {
     "flux-validate": "./dist/cli.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc -b",
     "clean": "rm -rf dist",
-    "test": "vitest --run"
+    "test": "vitest --run",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "typescript": "^5.3.3",

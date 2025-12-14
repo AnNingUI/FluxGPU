@@ -1,7 +1,23 @@
 {
   "name": "@flux/react",
   "version": "5.0.0",
-  "description": "React bindings for FluxGPU",
+  "description": "React hooks and components for FluxGPU - GPUCanvas, useGPUFrame, and more",
+  "author": "AnNingUI",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnNingUI/FluxGPU.git",
+    "directory": "packages/react"
+  },
+  "keywords": [
+    "fluxgpu",
+    "webgpu",
+    "react",
+    "hooks",
+    "components",
+    "gpu",
+    "graphics"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -11,9 +27,14 @@
       "default": "./dist/index.js"
     }
   },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc -b",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@flux/dsl": "workspace:*",
