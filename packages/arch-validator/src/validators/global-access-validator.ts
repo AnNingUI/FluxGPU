@@ -1,6 +1,6 @@
 // Validator to check for global variable access in domain packages
 import * as fs from 'fs/promises';
-import * as path from 'path';
+// Removed unused import: path
 import type { Validator, ValidationResult, ValidationError } from './validator.js';
 
 // Global variables that should not be accessed in domain packages
