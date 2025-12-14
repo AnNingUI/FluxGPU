@@ -4,6 +4,7 @@ import * as fs from 'fs/promises';
 import type { Validator, ValidationResult, ValidationError } from './validator.js';
 
 // Global variables that should not be accessed in domain packages
+// Note: 'location' is excluded because it's a common property name that causes false positives
 const FORBIDDEN_GLOBALS = [
   'window',
   'document',
@@ -11,7 +12,6 @@ const FORBIDDEN_GLOBALS = [
   'Worker',
   'localStorage',
   'sessionStorage',
-  'location',
   'history',
   'fetch', // Should use injected adapter
   'XMLHttpRequest',
