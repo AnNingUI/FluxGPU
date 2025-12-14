@@ -6,7 +6,7 @@ import {
   f32, u32, vec2, vec3, array,
   lit, makeVec2, makeVec3, vec4FromVec2, vec4FromVec3,
   normalize, length, sin, cos, clamp,
-} from '@flux/dsl';
+} from '@fluxgpu/dsl';
 
 export const Particle = defineStruct('Particle', {
   position: vec2(f32),

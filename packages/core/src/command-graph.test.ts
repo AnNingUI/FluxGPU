@@ -7,7 +7,7 @@ import {
   type CommandGraph,
   type Operation,
 } from './command-graph.js';
-import type { NodeId, ResourceId } from '@flux/contracts';
+import type { NodeId, ResourceId } from '@fluxgpu/contracts';
 
 // Helper function to create a test node
 function createNode(

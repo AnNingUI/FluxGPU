@@ -2,26 +2,26 @@
  * FluxGPU Vanilla TypeScript Demo
  * 
  * 使用所有子包：
- * - @flux/contracts: 类型定义和错误处理
- * - @flux/core: 核心领域逻辑 (ShadowState)
- * - @flux/dsl: 着色器 DSL
- * - @flux/engine: WebGPU 执行器 + 高级 API
- * - @flux/protocol: 二进制通信协议
+ * - @fluxgpu/contracts: 类型定义和错误处理
+ * - @fluxgpu/core: 核心领域逻辑 (ShadowState)
+ * - @fluxgpu/dsl: 着色器 DSL
+ * - @fluxgpu/engine: WebGPU 执行器 + 高级 API
+ * - @fluxgpu/protocol: 二进制通信协议
  */
 
 /// <reference types="@webgpu/types" />
 
-import type { CommandBuffer } from '@flux/contracts';
-import { Opcode } from '@flux/contracts';
-import { serializeCommand, deserializeCommand } from '@flux/protocol';
+import type { CommandBuffer } from '@fluxgpu/contracts';
+import { Opcode } from '@fluxgpu/contracts';
+import { serializeCommand, deserializeCommand } from '@fluxgpu/protocol';
 import {
   defineStruct,
   shader,
   f32, u32, vec2, vec3, array,
   lit, makeVec2, makeVec3, vec4FromVec2, vec4FromVec3,
   normalize, length, sin, cos, clamp,
-} from '@flux/dsl';
-import { GPUContext } from '@flux/engine';
+} from '@fluxgpu/dsl';
+import { GPUContext } from '@fluxgpu/engine';
 
 // 类型定义 (使用 DSL)
 const Particle = defineStruct('Particle', {
@@ -289,7 +289,7 @@ class ParticleDemo {
 
 // Protocol Demo
 function demonstrateProtocol(): void {
-  console.log('=== @flux/protocol Demo ===');
+  console.log('=== @fluxgpu/protocol Demo ===');
   
   const command: CommandBuffer = {
     id: 'cmd-001' as any,

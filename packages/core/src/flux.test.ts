@@ -1,8 +1,8 @@
 // Tests for Flux main API with dependency injection
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createFlux, type FluxConfig, type FluxInstance } from './flux.js';
-import type { IRuntimeAdapter, IExecutor, ResourceTable, CommandBuffer, IGPUResource, ResourceId } from '@flux/contracts';
-import { ResourceType, InitializationError, NotInitializedError, ValidationError } from '@flux/contracts';
+import type { IRuntimeAdapter, IExecutor, ResourceTable, CommandBuffer, IGPUResource, ResourceId } from '@fluxgpu/contracts';
+import { ResourceType, InitializationError, NotInitializedError, ValidationError } from '@fluxgpu/contracts';
 import type { GraphNode } from './command-graph.js';
 
 // Mock runtime adapter for testing

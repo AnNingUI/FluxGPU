@@ -1,11 +1,11 @@
-import type { IRuntimeAdapter, IExecutor } from '@flux/contracts';
+import type { IRuntimeAdapter, IExecutor } from '@fluxgpu/contracts';
 import { 
   InitializationError, 
   RuntimeError, 
   CommandExecutionError,
   BufferOverflowError 
-} from '@flux/contracts';
-import { serializeCommand } from '@flux/protocol';
+} from '@fluxgpu/contracts';
+import { serializeCommand } from '@fluxgpu/protocol';
 import { WorkerManager, type WorkerManagerConfig } from './worker-manager.js';
 
 /**

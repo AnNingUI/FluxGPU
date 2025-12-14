@@ -5,7 +5,7 @@
 /// <reference types="@webgpu/types" />
 
 import { defineComponent, ref, h, onMounted, watch, type PropType } from 'vue';
-import { GPUContext } from '@flux/engine';
+import { GPUContext } from '@fluxgpu/engine';
 import { useGPU, useGPUFrame } from './composables.js';
 
 // ============================================================================

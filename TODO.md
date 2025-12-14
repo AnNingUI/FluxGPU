@@ -2,7 +2,7 @@
 
 ## 1. Lit 框架绑定
 
-创建 `@flux/lit` 包，为 Lit Web Components 提供 FluxGPU 绑定。
+创建 `@fluxgpu/lit` 包，为 Lit Web Components 提供 FluxGPU 绑定。
 
 ### 任务清单
 

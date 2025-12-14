@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ShadowStateManager, createResourceProxy, ResourceState } from './shadow-state.js';
-import { ResourceType } from '@flux/contracts';
+import { ResourceType } from '@fluxgpu/contracts';
 
 describe('ShadowStateManager', () => {
   let manager: ShadowStateManager;

@@ -1,11 +1,11 @@
-# @flux/preact
+# @fluxgpu/preact
 
 Preact hooks and components for FluxGPU.
 
 ## Installation
 
 ```bash
-pnpm add @flux/preact @flux/engine @flux/dsl preact
+pnpm add @fluxgpu/preact @fluxgpu/engine @fluxgpu/dsl preact
 ```
 
 ## Components
@@ -15,8 +15,8 @@ pnpm add @flux/preact @flux/engine @flux/dsl preact
 Self-contained GPU canvas with automatic lifecycle management.
 
 ```tsx
-import { GPUCanvas } from '@flux/preact';
-import type { GPUContext } from '@flux/engine';
+import { GPUCanvas } from '@fluxgpu/preact';
+import type { GPUContext } from '@fluxgpu/engine';
 
 function App() {
   function handleReady(gpu: GPUContext) {
@@ -116,14 +116,14 @@ const { x, y } = useMouse(canvasRef);
 
 ## API Compatibility
 
-The @flux/preact API mirrors @flux/react exactly, making it easy to switch between frameworks or share code.
+The @fluxgpu/preact API mirrors @fluxgpu/react exactly, making it easy to switch between frameworks or share code.
 
 ## Full Example
 
 ```tsx
 import { useRef, useState, useCallback } from 'preact/hooks';
-import { GPUCanvas } from '@flux/preact';
-import { GPUContext } from '@flux/engine';
+import { GPUCanvas } from '@fluxgpu/preact';
+import { GPUContext } from '@fluxgpu/engine';
 
 export default function ParticleDemo() {
   const [fps, setFps] = useState(0);

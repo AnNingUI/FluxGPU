@@ -5,8 +5,8 @@ This guide explains how to combine the fluent DSL API with functional atoms for 
 ## Quick Start
 
 ```typescript
-import { shader, atomRegistry } from '@flux/dsl';
-import { fbm } from '@flux/dsl';
+import { shader, atomRegistry } from '@fluxgpu/dsl';
+import { fbm } from '@fluxgpu/dsl';
 
 // 1. Register atoms
 atomRegistry.set('fbm', fbm);
@@ -33,7 +33,7 @@ atomRegistry.set('simplexNoise', simplexNoise);
 atomRegistry.set('fbm', fbm);
 
 shader()
-  .useAtom(fbm, atomRegistry) // âœ… Automatically imports simplexNoise too!
+  .useAtom(fbm, atomRegistry) // âœ?Automatically imports simplexNoise too!
 ```
 
 ### 2. Automatic Deduplication
@@ -43,7 +43,7 @@ Functions are only included once, even if imported multiple times:
 ```typescript
 shader()
   .use(simplexNoise().code)
-  .use(simplexNoise().code) // âœ… Deduplicated - only appears once
+  .use(simplexNoise().code) // âœ?Deduplicated - only appears once
   .use(simplexNoise().code)
 ```
 
@@ -69,8 +69,8 @@ Use `ctx.call()` to invoke imported functions in your shader logic:
 ## Complete Example
 
 ```typescript
-import { shader, struct, f32, vec3, array, atomRegistry } from '@flux/dsl';
-import { simplexNoise, fbm } from '@flux/dsl';
+import { shader, struct, f32, vec3, array, atomRegistry } from '@fluxgpu/dsl';
+import { simplexNoise, fbm } from '@fluxgpu/dsl';
 
 // Register atoms
 atomRegistry.set('simplexNoise', simplexNoise);
@@ -156,8 +156,8 @@ Register atoms at application startup, not in every shader:
 
 ```typescript
 // app-init.ts
-import { atomRegistry } from '@flux/dsl';
-import { simplexNoise, fbm, turbulence } from '@flux/dsl';
+import { atomRegistry } from '@fluxgpu/dsl';
+import { simplexNoise, fbm, turbulence } from '@fluxgpu/dsl';
 
 export function initShaderLibrary() {
   atomRegistry.set('simplexNoise', simplexNoise);

@@ -5,7 +5,7 @@
 /// <reference types="@webgpu/types" />
 
 import { createSignal, createEffect, onMount, Show, type JSX, type ParentProps } from 'solid-js';
-import { GPUContext } from '@flux/engine';
+import { GPUContext } from '@fluxgpu/engine';
 import { createGPU, createGPUFrame } from './primitives.js';
 
 // ============================================================================

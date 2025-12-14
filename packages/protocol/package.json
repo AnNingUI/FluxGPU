@@ -1,5 +1,5 @@
 {
-  "name": "@flux/protocol",
+  "name": "@fluxgpu/protocol",
   "version": "5.0.0",
   "description": "Platform-agnostic binary communication protocol for GPU command serialization",
   "author": "AnNingUI",
@@ -37,7 +37,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@flux/contracts": "workspace:*"
+    "@fluxgpu/contracts": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.3.3",

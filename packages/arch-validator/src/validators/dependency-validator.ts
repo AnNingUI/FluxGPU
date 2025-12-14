@@ -63,7 +63,7 @@ export class DependencyValidator implements Validator {
         
         // Extract runtime dependencies (not devDependencies)
         const dependencies = Object.keys(pkgJson.dependencies || {})
-          .filter(dep => dep.startsWith('@flux/'));
+          .filter(dep => dep.startsWith('@fluxgpu/'));
         
         packages.push({
           name: pkgJson.name,
@@ -83,7 +83,7 @@ export class DependencyValidator implements Validator {
     const errors: ValidationError[] = [];
     
     // Determine package type
-    if (pkg.name === '@flux/contracts') {
+    if (pkg.name === '@fluxgpu/contracts') {
       // Contracts must have zero runtime dependencies
       if (pkg.dependencies.length > 0) {
         errors.push({
@@ -92,46 +92,46 @@ export class DependencyValidator implements Validator {
           rule: 'contracts-zero-dependencies'
         });
       }
-    } else if (pkg.name === '@flux/core' || pkg.name === '@flux/dsl') {
+    } else if (pkg.name === '@fluxgpu/core' || pkg.name === '@fluxgpu/dsl') {
       // Core and DSL must depend only on contracts
-      const invalidDeps = pkg.dependencies.filter(dep => dep !== '@flux/contracts');
+      const invalidDeps = pkg.dependencies.filter(dep => dep !== '@fluxgpu/contracts');
       if (invalidDeps.length > 0) {
         errors.push({
           file: pkg.path,
-          message: `${pkg.name} must depend only on @flux/contracts, but found: ${invalidDeps.join(', ')}`,
+          message: `${pkg.name} must depend only on @fluxgpu/contracts, but found: ${invalidDeps.join(', ')}`,
           rule: 'domain-layer-dependencies'
         });
       }
-    } else if (pkg.name === '@flux/protocol') {
+    } else if (pkg.name === '@fluxgpu/protocol') {
       // Protocol must depend only on contracts
-      const invalidDeps = pkg.dependencies.filter(dep => dep !== '@flux/contracts');
+      const invalidDeps = pkg.dependencies.filter(dep => dep !== '@fluxgpu/contracts');
       if (invalidDeps.length > 0) {
         errors.push({
           file: pkg.path,
-          message: `Protocol package must depend only on @flux/contracts, but found: ${invalidDeps.join(', ')}`,
+          message: `Protocol package must depend only on @fluxgpu/contracts, but found: ${invalidDeps.join(', ')}`,
           rule: 'protocol-dependencies'
         });
       }
-    } else if (pkg.name === '@flux/engine') {
+    } else if (pkg.name === '@fluxgpu/engine') {
       // Engine can depend on contracts, protocol, and dsl (for type-safe uniform buffers)
-      const allowedDeps = ['@flux/contracts', '@flux/protocol', '@flux/dsl'];
+      const allowedDeps = ['@fluxgpu/contracts', '@fluxgpu/protocol', '@fluxgpu/dsl'];
       const invalidDeps = pkg.dependencies.filter(dep => !allowedDeps.includes(dep));
       if (invalidDeps.length > 0) {
         errors.push({
           file: pkg.path,
-          message: `Engine package must depend only on @flux/contracts, @flux/protocol, and @flux/dsl, but found: ${invalidDeps.join(', ')}`,
+          message: `Engine package must depend only on @fluxgpu/contracts, @fluxgpu/protocol, and @fluxgpu/dsl, but found: ${invalidDeps.join(', ')}`,
           rule: 'engine-dependencies'
         });
       }
-    } else if (pkg.name.startsWith('@flux/host-')) {
+    } else if (pkg.name.startsWith('@fluxgpu/host-')) {
       // Host packages must depend only on contracts and protocol
       const invalidDeps = pkg.dependencies.filter(
-        dep => dep !== '@flux/contracts' && dep !== '@flux/protocol'
+        dep => dep !== '@fluxgpu/contracts' && dep !== '@fluxgpu/protocol'
       );
       if (invalidDeps.length > 0) {
         errors.push({
           file: pkg.path,
-          message: `Host package ${pkg.name} must depend only on @flux/contracts and @flux/protocol, but found: ${invalidDeps.join(', ')}`,
+          message: `Host package ${pkg.name} must depend only on @fluxgpu/contracts and @fluxgpu/protocol, but found: ${invalidDeps.join(', ')}`,
           rule: 'host-dependencies'
         });
       }

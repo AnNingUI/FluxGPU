@@ -1,6 +1,6 @@
 // Resource Composition Utilities
 // Factory functions and wrappers for composing resource capabilities
-import { ResourceType, type ResourceId } from '@flux/contracts';
+import { ResourceType, type ResourceId } from '@fluxgpu/contracts';
 import { ShadowStateManager, type Resource } from './shadow-state.js';
 
 // Base buffer handle - raw resource without additional capabilities

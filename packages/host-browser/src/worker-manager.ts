@@ -1,4 +1,4 @@
-import { RingBuffer } from '@flux/protocol';
+import { RingBuffer } from '@fluxgpu/protocol';
 
 /**
  * Message types for worker communication

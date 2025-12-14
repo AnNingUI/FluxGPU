@@ -1,5 +1,5 @@
 {
-  "name": "@flux/example-preact",
+  "name": "@fluxgpu/example-preact",
   "version": "1.0.0",
   "private": true,
   "description": "FluxGPU Preact Demo",
@@ -10,9 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@flux/dsl": "workspace:*",
-    "@flux/engine": "workspace:*",
-    "@flux/preact": "workspace:*",
+    "@fluxgpu/dsl": "workspace:*",
+    "@fluxgpu/engine": "workspace:*",
+    "@fluxgpu/preact": "workspace:*",
     "preact": "^10.19.0"
   },
   "devDependencies": {

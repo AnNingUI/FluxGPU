@@ -25,7 +25,7 @@ describe('DependencyValidator', () => {
   });
 
   async function createPackage(name: string, dependencies: Record<string, string> = {}) {
-    const pkgDir = path.join(tempDir, 'packages', name.replace('@flux/', ''));
+    const pkgDir = path.join(tempDir, 'packages', name.replace('@fluxgpu/', ''));
     await fs.mkdir(pkgDir, { recursive: true });
     
     const pkgJson = {
@@ -41,7 +41,7 @@ describe('DependencyValidator', () => {
   }
 
   it('should pass when contracts has zero runtime dependencies', async () => {
-    await createPackage('@flux/contracts');
+    await createPackage('@fluxgpu/contracts');
     
     const result = await validator.validate([]);
     
@@ -50,8 +50,8 @@ describe('DependencyValidator', () => {
   });
 
   it('should fail when contracts has runtime dependencies', async () => {
-    await createPackage('@flux/contracts', {
-      '@flux/core': 'workspace:*'
+    await createPackage('@fluxgpu/contracts', {
+      '@fluxgpu/core': 'workspace:*'
     });
     
     const result = await validator.validate([]);
@@ -59,13 +59,13 @@ describe('DependencyValidator', () => {
     expect(result.valid).toBe(false);
     expect(result.errors).toHaveLength(1);
     expect(result.errors[0].rule).toBe('contracts-zero-dependencies');
-    expect(result.errors[0].message).toContain('@flux/core');
+    expect(result.errors[0].message).toContain('@fluxgpu/core');
   });
 
   it('should pass when core depends only on contracts', async () => {
-    await createPackage('@flux/contracts');
-    await createPackage('@flux/core', {
-      '@flux/contracts': 'workspace:*'
+    await createPackage('@fluxgpu/contracts');
+    await createPackage('@fluxgpu/core', {
+      '@fluxgpu/contracts': 'workspace:*'
     });
     
     const result = await validator.validate([]);
@@ -75,9 +75,9 @@ describe('DependencyValidator', () => {
   });
 
   it('should fail when core depends on non-contracts packages', async () => {
-    await createPackage('@flux/core', {
-      '@flux/contracts': 'workspace:*',
-      '@flux/protocol': 'workspace:*'
+    await createPackage('@fluxgpu/core', {
+      '@fluxgpu/contracts': 'workspace:*',
+      '@fluxgpu/protocol': 'workspace:*'
     });
     
     const result = await validator.validate([]);
@@ -85,13 +85,13 @@ describe('DependencyValidator', () => {
     expect(result.valid).toBe(false);
     expect(result.errors).toHaveLength(1);
     expect(result.errors[0].rule).toBe('domain-layer-dependencies');
-    expect(result.errors[0].message).toContain('@flux/protocol');
+    expect(result.errors[0].message).toContain('@fluxgpu/protocol');
   });
 
   it('should pass when dsl depends only on contracts', async () => {
-    await createPackage('@flux/contracts');
-    await createPackage('@flux/dsl', {
-      '@flux/contracts': 'workspace:*'
+    await createPackage('@fluxgpu/contracts');
+    await createPackage('@fluxgpu/dsl', {
+      '@fluxgpu/contracts': 'workspace:*'
     });
     
     const result = await validator.validate([]);
@@ -101,9 +101,9 @@ describe('DependencyValidator', () => {
   });
 
   it('should fail when dsl depends on non-contracts packages', async () => {
-    await createPackage('@flux/dsl', {
-      '@flux/contracts': 'workspace:*',
-      '@flux/engine': 'workspace:*'
+    await createPackage('@fluxgpu/dsl', {
+      '@fluxgpu/contracts': 'workspace:*',
+      '@fluxgpu/engine': 'workspace:*'
     });
     
     const result = await validator.validate([]);
@@ -111,13 +111,13 @@ describe('DependencyValidator', () => {
     expect(result.valid).toBe(false);
     expect(result.errors).toHaveLength(1);
     expect(result.errors[0].rule).toBe('domain-layer-dependencies');
-    expect(result.errors[0].message).toContain('@flux/engine');
+    expect(result.errors[0].message).toContain('@fluxgpu/engine');
   });
 
   it('should pass when protocol depends only on contracts', async () => {
-    await createPackage('@flux/contracts');
-    await createPackage('@flux/protocol', {
-      '@flux/contracts': 'workspace:*'
+    await createPackage('@fluxgpu/contracts');
+    await createPackage('@fluxgpu/protocol', {
+      '@fluxgpu/contracts': 'workspace:*'
     });
     
     const result = await validator.validate([]);
@@ -127,9 +127,9 @@ describe('DependencyValidator', () => {
   });
 
   it('should fail when protocol depends on non-contracts packages', async () => {
-    await createPackage('@flux/protocol', {
-      '@flux/contracts': 'workspace:*',
-      '@flux/core': 'workspace:*'
+    await createPackage('@fluxgpu/protocol', {
+      '@fluxgpu/contracts': 'workspace:*',
+      '@fluxgpu/core': 'workspace:*'
     });
     
     const result = await validator.validate([]);
@@ -137,21 +137,21 @@ describe('DependencyValidator', () => {
     expect(result.valid).toBe(false);
     expect(result.errors).toHaveLength(1);
     expect(result.errors[0].rule).toBe('protocol-dependencies');
-    expect(result.errors[0].message).toContain('@flux/core');
+    expect(result.errors[0].message).toContain('@fluxgpu/core');
   });
 
   it('should pass when infrastructure packages depend only on contracts and protocol', async () => {
-    await createPackage('@flux/contracts');
-    await createPackage('@flux/protocol', {
-      '@flux/contracts': 'workspace:*'
+    await createPackage('@fluxgpu/contracts');
+    await createPackage('@fluxgpu/protocol', {
+      '@fluxgpu/contracts': 'workspace:*'
     });
-    await createPackage('@flux/engine', {
-      '@flux/contracts': 'workspace:*',
-      '@flux/protocol': 'workspace:*'
+    await createPackage('@fluxgpu/engine', {
+      '@fluxgpu/contracts': 'workspace:*',
+      '@fluxgpu/protocol': 'workspace:*'
     });
-    await createPackage('@flux/host-browser', {
-      '@flux/contracts': 'workspace:*',
-      '@flux/protocol': 'workspace:*'
+    await createPackage('@fluxgpu/host-browser', {
+      '@fluxgpu/contracts': 'workspace:*',
+      '@fluxgpu/protocol': 'workspace:*'
     });
     
     const result = await validator.validate([]);
@@ -161,10 +161,10 @@ describe('DependencyValidator', () => {
   });
 
   it('should fail when infrastructure packages depend on domain packages', async () => {
-    await createPackage('@flux/engine', {
-      '@flux/contracts': 'workspace:*',
-      '@flux/protocol': 'workspace:*',
-      '@flux/core': 'workspace:*'
+    await createPackage('@fluxgpu/engine', {
+      '@fluxgpu/contracts': 'workspace:*',
+      '@fluxgpu/protocol': 'workspace:*',
+      '@fluxgpu/core': 'workspace:*'
     });
     
     const result = await validator.validate([]);
@@ -172,20 +172,20 @@ describe('DependencyValidator', () => {
     expect(result.valid).toBe(false);
     expect(result.errors).toHaveLength(1);
     expect(result.errors[0].rule).toBe('infrastructure-dependencies');
-    expect(result.errors[0].message).toContain('@flux/core');
+    expect(result.errors[0].message).toContain('@fluxgpu/core');
   });
 
   it('should handle multiple violations across packages', async () => {
-    await createPackage('@flux/contracts', {
-      '@flux/core': 'workspace:*'
+    await createPackage('@fluxgpu/contracts', {
+      '@fluxgpu/core': 'workspace:*'
     });
-    await createPackage('@flux/core', {
-      '@flux/contracts': 'workspace:*',
-      '@flux/protocol': 'workspace:*'
+    await createPackage('@fluxgpu/core', {
+      '@fluxgpu/contracts': 'workspace:*',
+      '@fluxgpu/protocol': 'workspace:*'
     });
-    await createPackage('@flux/engine', {
-      '@flux/contracts': 'workspace:*',
-      '@flux/dsl': 'workspace:*'
+    await createPackage('@fluxgpu/engine', {
+      '@fluxgpu/contracts': 'workspace:*',
+      '@fluxgpu/dsl': 'workspace:*'
     });
     
     const result = await validator.validate([]);
@@ -195,10 +195,10 @@ describe('DependencyValidator', () => {
   });
 
   it('should ignore non-@flux dependencies', async () => {
-    await createPackage('@flux/contracts');
-    await createPackage('@flux/engine', {
-      '@flux/contracts': 'workspace:*',
-      '@flux/protocol': 'workspace:*',
+    await createPackage('@fluxgpu/contracts');
+    await createPackage('@fluxgpu/engine', {
+      '@fluxgpu/contracts': 'workspace:*',
+      '@fluxgpu/protocol': 'workspace:*',
       '@webgpu/types': '^0.1.40'
     });
     

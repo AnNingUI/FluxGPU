@@ -1,5 +1,5 @@
 {
-  "name": "@flux/contracts",
+  "name": "@fluxgpu/contracts",
   "version": "5.0.0",
   "description": "Pure TypeScript interfaces and type definitions for FluxGPU - zero dependencies",
   "author": "AnNingUI",

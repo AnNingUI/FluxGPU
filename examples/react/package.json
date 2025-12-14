@@ -1,5 +1,5 @@
 {
-  "name": "@flux/example-react",
+  "name": "@fluxgpu/example-react",
   "version": "1.0.0",
   "private": true,
   "description": "FluxGPU React Demo",
@@ -10,9 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@flux/dsl": "workspace:*",
-    "@flux/engine": "workspace:*",
-    "@flux/react": "workspace:*",
+    "@fluxgpu/dsl": "workspace:*",
+    "@fluxgpu/engine": "workspace:*",
+    "@fluxgpu/react": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

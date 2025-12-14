@@ -1,11 +1,11 @@
-# @flux/solid
+# @fluxgpu/solid
 
 SolidJS primitives and components for FluxGPU.
 
 ## Installation
 
 ```bash
-pnpm add @flux/solid @flux/engine @flux/dsl solid-js
+pnpm add @fluxgpu/solid @fluxgpu/engine @fluxgpu/dsl solid-js
 ```
 
 ## Components
@@ -15,8 +15,8 @@ pnpm add @flux/solid @flux/engine @flux/dsl solid-js
 Self-contained GPU canvas component.
 
 ```tsx
-import { GPUCanvas } from '@flux/solid';
-import type { GPUContext } from '@flux/engine';
+import { GPUCanvas } from '@fluxgpu/solid';
+import type { GPUContext } from '@fluxgpu/engine';
 
 function App() {
   function handleReady(gpu: GPUContext) {
@@ -109,8 +109,8 @@ const { x, y } = createMouse(canvas);
 
 ```tsx
 import { createSignal } from 'solid-js';
-import { GPUCanvas } from '@flux/solid';
-import { GPUContext } from '@flux/engine';
+import { GPUCanvas } from '@fluxgpu/solid';
+import { GPUContext } from '@fluxgpu/engine';
 
 export default function ParticleDemo() {
   const [attraction, setAttraction] = createSignal(0.5);

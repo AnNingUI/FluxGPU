@@ -14,23 +14,23 @@ A modern WebGPU framework with Hexagonal Architecture, type-safe shader DSL, and
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Framework Layer                          │
-│         @flux/react  @flux/vue  @flux/solid  @flux/preact   │
+│                   Framework Layer                           │
+│   @fluxgpu/react  @fluxgpu/vue  @fluxgpu/solid  @fluxgpu/preact   │
 └─────────────────────────────────────────────────────────────┘
-                              │
+                              ↓
 ┌─────────────────────────────────────────────────────────────┐
-│                  Infrastructure Layer                       │
-│              @flux/engine    @flux/host-browser             │
+│                 Infrastructure Layer                        │
+│           @fluxgpu/engine    @fluxgpu/host-browser          │
 └─────────────────────────────────────────────────────────────┘
-                              │
+                              ↓
 ┌─────────────────────────────────────────────────────────────┐
-│                     Bridge Layer                            │
-│                      @flux/protocol                         │
+│                    Bridge Layer                             │
+│                   @fluxgpu/protocol                         │
 └─────────────────────────────────────────────────────────────┘
-                              │
+                              ↓
 ┌─────────────────────────────────────────────────────────────┐
-│                     Domain Layer                            │
-│           @flux/contracts  @flux/core  @flux/dsl            │
+│                    Domain Layer                             │
+│        @fluxgpu/contracts  @fluxgpu/core  @fluxgpu/dsl      │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -38,32 +38,32 @@ A modern WebGPU framework with Hexagonal Architecture, type-safe shader DSL, and
 
 | Package | Description |
 |---------|-------------|
-| [@flux/contracts](./packages/contracts) | Pure TypeScript interfaces (zero dependencies) |
-| [@flux/core](./packages/core) | Graph orchestration and shadow state |
-| [@flux/dsl](./packages/dsl) | Functional shader composition DSL |
-| [@flux/protocol](./packages/protocol) | Binary communication protocol |
-| [@flux/engine](./packages/engine) | WebGPU executor and high-level API |
-| [@flux/host-browser](./packages/host-browser) | Browser runtime adapter |
-| [@flux/react](./packages/react) | React hooks and components |
-| [@flux/vue](./packages/vue) | Vue composables and components |
-| [@flux/solid](./packages/solid) | SolidJS primitives and components |
-| [@flux/preact](./packages/preact) | Preact hooks and components |
+| [@fluxgpu/contracts](./packages/contracts) | Pure TypeScript interfaces (zero dependencies) |
+| [@fluxgpu/core](./packages/core) | Graph orchestration and shadow state |
+| [@fluxgpu/dsl](./packages/dsl) | Functional shader composition DSL |
+| [@fluxgpu/protocol](./packages/protocol) | Binary communication protocol |
+| [@fluxgpu/engine](./packages/engine) | WebGPU executor and high-level API |
+| [@fluxgpu/host-browser](./packages/host-browser) | Browser runtime adapter |
+| [@fluxgpu/react](./packages/react) | React hooks and components |
+| [@fluxgpu/vue](./packages/vue) | Vue composables and components |
+| [@fluxgpu/solid](./packages/solid) | SolidJS primitives and components |
+| [@fluxgpu/preact](./packages/preact) | Preact hooks and components |
 
 ## Quick Start
 
 ```bash
 # Install
-pnpm add @flux/engine @flux/dsl @flux/react
+pnpm add @fluxgpu/engine @fluxgpu/dsl @fluxgpu/react
 
 # Or with npm
-npm install @flux/engine @flux/dsl @flux/react
+npm install @fluxgpu/engine @fluxgpu/dsl @fluxgpu/react
 ```
 
 ### React Example
 
 ```tsx
-import { GPUCanvas } from '@flux/react';
-import { GPUContext } from '@flux/engine';
+import { GPUCanvas } from '@fluxgpu/react';
+import { GPUContext } from '@fluxgpu/engine';
 
 function App() {
   const handleReady = (gpu: GPUContext) => {
@@ -88,7 +88,7 @@ function App() {
 ### Shader DSL Example
 
 ```typescript
-import { shader, defineStruct, f32, vec2, vec3 } from '@flux/dsl';
+import { shader, defineStruct, f32, vec2, vec3 } from '@fluxgpu/dsl';
 
 const Particle = defineStruct('Particle', {
   position: vec2(f32),
@@ -109,11 +109,11 @@ const computeShader = shader()
 
 ```bash
 # Run examples
-pnpm --filter "@flux/example-vanilla" dev   # http://localhost:8000
-pnpm --filter "@flux/example-react" dev     # http://localhost:8001
-pnpm --filter "@flux/example-vue" dev       # http://localhost:8002
-pnpm --filter "@flux/example-solid" dev     # http://localhost:8003
-pnpm --filter "@flux/example-preact" dev    # http://localhost:8004
+pnpm --filter "@fluxgpu/example-vanilla" dev   # http://localhost:8000
+pnpm --filter "@fluxgpu/example-react" dev     # http://localhost:8001
+pnpm --filter "@fluxgpu/example-vue" dev       # http://localhost:8002
+pnpm --filter "@fluxgpu/example-solid" dev     # http://localhost:8003
+pnpm --filter "@fluxgpu/example-preact" dev    # http://localhost:8004
 ```
 
 ## Development

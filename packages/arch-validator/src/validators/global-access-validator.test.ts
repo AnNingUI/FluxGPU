@@ -25,7 +25,7 @@ describe('GlobalAccessValidator', () => {
 
   it('should pass for code without global access', async () => {
     const content = `
-      import { IRuntimeAdapter } from '@flux/contracts';
+      import { IRuntimeAdapter } from '@fluxgpu/contracts';
       
       export function createAdapter(adapter: IRuntimeAdapter) {
         return adapter;

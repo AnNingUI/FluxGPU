@@ -3,8 +3,8 @@ import type {
   CommandBuffer, 
   ResourceId, 
   IGPUResource
-} from '@flux/contracts';
-import { ResourceType, Opcode } from '@flux/contracts';
+} from '@fluxgpu/contracts';
+import { ResourceType, Opcode } from '@fluxgpu/contracts';
 import { 
   InitializationError,
   RuntimeError,
@@ -13,9 +13,9 @@ import {
   InvalidResourceError,
   InvalidOpcodeError,
   ErrorRecoveryContext
-} from '@flux/contracts';
+} from '@fluxgpu/contracts';
 import { ResourceTable } from './resource-table.js';
-import { RingBuffer, deserializeCommand } from '@flux/protocol';
+import { RingBuffer, deserializeCommand } from '@fluxgpu/protocol';
 
 // Import WebGPU types - this is the ONLY package that should import these
 /// <reference types="@webgpu/types" />

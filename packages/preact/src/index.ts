@@ -1,8 +1,8 @@
 /**
- * @flux/preact - Preact bindings for FluxGPU
+ * @fluxgpu/preact - Preact bindings for FluxGPU
  * 
  * Provides hooks and components for easy WebGPU integration in Preact apps.
- * API is similar to @flux/react for easy migration.
+ * API is similar to @fluxgpu/react for easy migration.
  */
 
 export * from './hooks.js';

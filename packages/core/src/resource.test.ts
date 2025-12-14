@@ -9,7 +9,7 @@ import {
   type IStorage,
   type BufferHandle,
 } from './resource.js';
-import type { ResourceId } from '@flux/contracts';
+import type { ResourceId } from '@fluxgpu/contracts';
 
 describe('Resource Composition Utilities', () => {
   let manager: ShadowStateManager;

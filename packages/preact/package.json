@@ -1,7 +1,7 @@
 {
-  "name": "@flux/preact",
+  "name": "@fluxgpu/preact",
   "version": "5.0.0",
-  "description": "Preact hooks and components for FluxGPU - lightweight alternative to @flux/react",
+  "description": "Preact hooks and components for FluxGPU - lightweight alternative to @fluxgpu/react",
   "author": "AnNingUI",
   "license": "MIT",
   "repository": {
@@ -38,8 +38,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@flux/dsl": "workspace:*",
-    "@flux/engine": "workspace:*",
+    "@fluxgpu/dsl": "workspace:*",
+    "@fluxgpu/engine": "workspace:*",
     "@webgpu/types": "^0.1.40"
   },
   "peerDependencies": {

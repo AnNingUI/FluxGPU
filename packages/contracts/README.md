@@ -1,4 +1,4 @@
-# @flux/contracts
+# @fluxgpu/contracts
 
 Pure TypeScript interfaces defining all ports for FluxGPU.
 
@@ -14,14 +14,14 @@ This package contains zero-dependency type definitions that form the contract be
 ## Installation
 
 ```bash
-pnpm add @flux/contracts
+pnpm add @fluxgpu/contracts
 ```
 
 ## Usage
 
 ```typescript
-import type { CommandBuffer, ResourceId, Opcode } from '@flux/contracts';
-import { FluxError, ErrorCode } from '@flux/contracts';
+import type { CommandBuffer, ResourceId, Opcode } from '@fluxgpu/contracts';
+import { FluxError, ErrorCode } from '@fluxgpu/contracts';
 
 // Create a command
 const command: CommandBuffer = {

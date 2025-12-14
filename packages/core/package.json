@@ -1,5 +1,5 @@
 {
-  "name": "@flux/core",
+  "name": "@fluxgpu/core",
   "version": "5.0.0",
   "description": "Core domain logic for FluxGPU - graph orchestration, shadow state management, and validation",
   "author": "AnNingUI",
@@ -36,7 +36,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@flux/contracts": "workspace:*"
+    "@fluxgpu/contracts": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.3.3",

@@ -1,8 +1,8 @@
 /// <reference types="@webgpu/types" />
 
 import { createSignal } from 'solid-js';
-import { GPUCanvas } from '@flux/solid';
-import { GPUContext } from '@flux/engine';
+import { GPUCanvas } from '@fluxgpu/solid';
+import { GPUContext } from '@fluxgpu/engine';
 import { Uniforms, generateComputeShader, generateVertexShader, generateFragmentShader } from './shaders';
 
 const PARTICLE_COUNT = 15000;
@@ -110,7 +110,7 @@ export default function App() {
     <div class="app">
       <header>
         <h1>🚀 FluxGPU SolidJS Demo</h1>
-        <p>Using @flux/solid GPUCanvas component</p>
+        <p>Using @fluxgpu/solid GPUCanvas component</p>
       </header>
       
       <main>

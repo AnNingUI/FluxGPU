@@ -1,6 +1,6 @@
 // Command Graph Builder
 // Builds and validates Directed Acyclic Graphs (DAGs) for GPU operations
-import type { NodeId, ResourceId, ValidationResult } from '@flux/contracts';
+import type { NodeId, ResourceId, ValidationResult } from '@fluxgpu/contracts';
 import { 
   Result, 
   Ok, 
@@ -8,7 +8,7 @@ import {
   GraphTopologyError, 
   CircularDependencyError,
   ValidationError 
-} from '@flux/contracts';
+} from '@fluxgpu/contracts';
 
 // Operation type representing a GPU operation
 export interface Operation {

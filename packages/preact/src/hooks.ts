@@ -1,15 +1,15 @@
 /**
  * Preact Hooks for FluxGPU
  * 
- * API mirrors @flux/react for easy migration
+ * API mirrors @fluxgpu/react for easy migration
  */
 
 /// <reference types="@webgpu/types" />
 
 import { useState, useEffect, useRef, useMemo } from 'preact/hooks';
 import type { RefObject } from 'preact';
-import type { StructType } from '@flux/dsl';
-import { GPUContext, ComputePass, RenderPass, UniformBuffer } from '@flux/engine';
+import type { StructType } from '@fluxgpu/dsl';
+import { GPUContext, ComputePass, RenderPass, UniformBuffer } from '@fluxgpu/engine';
 
 // ============================================================================
 // useGPUContext - GPU 初始化 hook

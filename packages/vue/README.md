@@ -1,11 +1,11 @@
-# @flux/vue
+# @fluxgpu/vue
 
 Vue composables and components for FluxGPU.
 
 ## Installation
 
 ```bash
-pnpm add @flux/vue @flux/engine @flux/dsl vue
+pnpm add @fluxgpu/vue @fluxgpu/engine @fluxgpu/dsl vue
 ```
 
 ## Components
@@ -16,8 +16,8 @@ Self-contained GPU canvas component.
 
 ```vue
 <script setup lang="ts">
-import { GPUCanvas } from '@flux/vue';
-import type { GPUContext } from '@flux/engine';
+import { GPUCanvas } from '@fluxgpu/vue';
+import type { GPUContext } from '@fluxgpu/engine';
 
 function handleReady(gpu: GPUContext) {
   // Initialize pipelines
@@ -107,8 +107,8 @@ const mousePos = useMouse(canvasRef);
 ```vue
 <script setup lang="ts">
 import { ref, shallowRef } from 'vue';
-import { GPUCanvas } from '@flux/vue';
-import { GPUContext } from '@flux/engine';
+import { GPUCanvas } from '@fluxgpu/vue';
+import { GPUContext } from '@fluxgpu/engine';
 
 const attraction = ref(0.5);
 const damping = ref(0.98);

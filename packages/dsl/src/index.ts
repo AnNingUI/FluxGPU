@@ -1,4 +1,4 @@
-// @flux/dsl - Unified shader DSL
+// @fluxgpu/dsl - Unified shader DSL
 // 直接复用 types.js 和 builtins.js
 
 // 核心类型系统

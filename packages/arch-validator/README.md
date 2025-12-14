@@ -1,4 +1,4 @@
-# @flux/arch-validator
+# @fluxgpu/arch-validator
 
 Static analysis tool for validating FluxGPU's architectural constraints.
 
@@ -13,7 +13,7 @@ This package enforces the hexagonal architecture rules at build time:
 ## Installation
 
 ```bash
-pnpm add -D @flux/arch-validator
+pnpm add -D @fluxgpu/arch-validator
 ```
 
 ## Usage
@@ -31,7 +31,7 @@ pnpm validate:arch
 ### Programmatic
 
 ```typescript
-import { validateArchitecture } from '@flux/arch-validator';
+import { validateArchitecture } from '@fluxgpu/arch-validator';
 
 const result = validateArchitecture({
   domainPackages: ['packages/contracts', 'packages/core', 'packages/dsl'],
@@ -48,9 +48,9 @@ if (!result.valid) {
 
 | Rule | Description |
 |------|-------------|
-| Domain Isolation | `@flux/core`, `@flux/dsl` cannot import from engine/host |
-| Contract Purity | `@flux/contracts` has zero dependencies |
-| Bridge Independence | `@flux/protocol` only depends on contracts |
+| Domain Isolation | `@fluxgpu/core`, `@fluxgpu/dsl` cannot import from engine/host |
+| Contract Purity | `@fluxgpu/contracts` has zero dependencies |
+| Bridge Independence | `@fluxgpu/protocol` only depends on contracts |
 | Dependency Direction | Dependencies flow inward toward domain |
 
 ## Output
@@ -63,7 +63,7 @@ Validating domain packages:
   - packages/core
   - packages/dsl
 
-âœ“ All architectural constraints validated successfully
+âœ?All architectural constraints validated successfully
 ```
 
 ## Integration

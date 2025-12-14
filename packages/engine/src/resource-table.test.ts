@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { ResourceTable } from './resource-table.js';
-import type { ResourceId, IGPUResource, ResourceType } from '@flux/contracts';
+import type { ResourceId, IGPUResource, ResourceType } from '@fluxgpu/contracts';
 
 // Mock GPU resource for testing
 function createMockResource(id: ResourceId, type: ResourceType): IGPUResource {

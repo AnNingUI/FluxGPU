@@ -1,5 +1,5 @@
 {
-  "name": "@flux/example-solid",
+  "name": "@fluxgpu/example-solid",
   "version": "1.0.0",
   "private": true,
   "description": "FluxGPU SolidJS Demo",
@@ -10,9 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@flux/dsl": "workspace:*",
-    "@flux/engine": "workspace:*",
-    "@flux/solid": "workspace:*",
+    "@fluxgpu/dsl": "workspace:*",
+    "@fluxgpu/engine": "workspace:*",
+    "@fluxgpu/solid": "workspace:*",
     "solid-js": "^1.8.0"
   },
   "devDependencies": {

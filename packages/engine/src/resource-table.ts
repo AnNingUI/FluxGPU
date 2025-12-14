@@ -1,4 +1,4 @@
-import type { ResourceId, IGPUResource, ResourceTable as IResourceTable } from '@flux/contracts';
+import type { ResourceId, IGPUResource, ResourceTable as IResourceTable } from '@fluxgpu/contracts';
 
 /**
  * ResourceTable manages the mapping from ResourceId to actual GPU resources.

@@ -1,6 +1,6 @@
 // Shadow State Management
 // Maintains proxy objects for remote GPU resources
-import type { ResourceId, ResourceType, IGPUResource } from '@flux/contracts';
+import type { ResourceId, ResourceType, IGPUResource } from '@fluxgpu/contracts';
 
 // Resource interface with metadata
 export interface Resource {

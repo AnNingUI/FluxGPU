@@ -1,5 +1,5 @@
 {
-  "name": "@flux/react",
+  "name": "@fluxgpu/react",
   "version": "5.0.0",
   "description": "React hooks and components for FluxGPU - GPUCanvas, useGPUFrame, and more",
   "author": "AnNingUI",
@@ -37,8 +37,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@flux/dsl": "workspace:*",
-    "@flux/engine": "workspace:*",
+    "@fluxgpu/dsl": "workspace:*",
+    "@fluxgpu/engine": "workspace:*",
     "@webgpu/types": "^0.1.40"
   },
   "peerDependencies": {

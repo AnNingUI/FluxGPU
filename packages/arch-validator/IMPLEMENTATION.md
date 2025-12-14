@@ -11,16 +11,16 @@ This package implements static analysis tools to enforce FluxGPU's architectural
 ```
 packages/arch-validator/
 ├── src/
-│   ├── validators/
-│   │   ├── validator.ts              # Base interfaces and types
-│   │   ├── global-access-validator.ts # Checks for forbidden globals
-│   │   ├── global-access-validator.test.ts
-│   │   ├── inheritance-validator.ts   # Checks inheritance depth
-│   │   └── inheritance-validator.test.ts
-│   ├── runner.ts                      # Main validation orchestrator
-│   ├── cli.ts                         # Command-line interface
-│   ├── index.ts                       # Public API exports
-│   └── integration.test.ts            # End-to-end tests
+�?  ├── validators/
+�?  �?  ├── validator.ts              # Base interfaces and types
+�?  �?  ├── global-access-validator.ts # Checks for forbidden globals
+�?  �?  ├── global-access-validator.test.ts
+�?  �?  ├── inheritance-validator.ts   # Checks inheritance depth
+�?  �?  └── inheritance-validator.test.ts
+�?  ├── runner.ts                      # Main validation orchestrator
+�?  ├── cli.ts                         # Command-line interface
+�?  ├── index.ts                       # Public API exports
+�?  └── integration.test.ts            # End-to-end tests
 ├── test-manual.js                     # Manual testing script
 ├── package.json
 ├── tsconfig.json
@@ -60,14 +60,14 @@ packages/arch-validator/
      - Report violation if found
 
 **Edge Cases Handled:**
-- Comments: `// window is bad` → ignored
-- Strings: `"window"` → ignored
-- Type annotations: `window: Window` → ignored
-- Interface definitions: `interface X { window: any }` → ignored
+- Comments: `// window is bad` �?ignored
+- Strings: `"window"` �?ignored
+- Type annotations: `window: Window` �?ignored
+- Interface definitions: `interface X { window: any }` �?ignored
 
 #### 2. InheritanceValidator
 
-**Purpose:** Analyzes class hierarchies to ensure inheritance depth ≤ 1.
+**Purpose:** Analyzes class hierarchies to ensure inheritance depth �?1.
 
 **Implementation:**
 - Uses TypeScript Compiler API to parse source files
@@ -80,7 +80,7 @@ packages/arch-validator/
    - Parse with TypeScript compiler
    - Visit all class declarations
    - Extract class name and parent (if extends clause exists)
-   - Build map: `className → { parent, line, column }`
+   - Build map: `className �?{ parent, line, column }`
 2. For each class in map:
    - Calculate inheritance depth recursively
    - Stop at external classes (not in map)
@@ -137,7 +137,7 @@ The validator is integrated via npm scripts in the root `package.json`:
 ```json
 {
   "scripts": {
-    "validate:arch": "pnpm --filter @flux/arch-validator build && node packages/arch-validator/dist/cli.js",
+    "validate:arch": "pnpm --filter @fluxgpu/arch-validator build && node packages/arch-validator/dist/cli.js",
     "prebuild": "pnpm validate:arch"
   }
 }
@@ -279,13 +279,13 @@ End-to-end test validates actual domain packages:
 
 ### Requirements Validation
 
-✅ **Requirement 10.1:** Domain packages must not access global variables
+�?**Requirement 10.1:** Domain packages must not access global variables
 - Implemented via GlobalAccessValidator
 - Scans contracts, core, dsl packages
 - Detects window, document, navigator, Worker, etc.
 - Integrated into build process
 
-✅ **Requirement 10.3:** Class inheritance depth must not exceed one level
+�?**Requirement 10.3:** Class inheritance depth must not exceed one level
 - Implemented via InheritanceValidator
 - Uses TypeScript AST for accurate analysis
 - Calculates depth within file scope

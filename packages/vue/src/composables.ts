@@ -5,8 +5,8 @@
 /// <reference types="@webgpu/types" />
 
 import { ref, shallowRef, onMounted, onUnmounted, watch, type Ref, type ShallowRef } from 'vue';
-import type { StructType } from '@flux/dsl';
-import { GPUContext, ComputePass, RenderPass, UniformBuffer } from '@flux/engine';
+import type { StructType } from '@fluxgpu/dsl';
+import { GPUContext, ComputePass, RenderPass, UniformBuffer } from '@fluxgpu/engine';
 
 // ============================================================================
 // useGPU - 主要的 GPU 初始化 composable

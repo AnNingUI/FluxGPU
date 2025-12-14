@@ -1,11 +1,11 @@
-# @flux/react
+# @fluxgpu/react
 
 React hooks and components for FluxGPU.
 
 ## Installation
 
 ```bash
-pnpm add @flux/react @flux/engine @flux/dsl react
+pnpm add @fluxgpu/react @fluxgpu/engine @fluxgpu/dsl react
 ```
 
 ## Components
@@ -15,8 +15,8 @@ pnpm add @flux/react @flux/engine @flux/dsl react
 Self-contained GPU canvas with automatic lifecycle management.
 
 ```tsx
-import { GPUCanvas } from '@flux/react';
-import { GPUContext } from '@flux/engine';
+import { GPUCanvas } from '@fluxgpu/react';
+import { GPUContext } from '@fluxgpu/engine';
 
 function App() {
   const handleReady = (gpu: GPUContext) => {
@@ -118,8 +118,8 @@ const { x, y } = useMouse(canvasRef);
 
 ```tsx
 import { useRef, useState, useCallback } from 'react';
-import { GPUCanvas } from '@flux/react';
-import { GPUContext } from '@flux/engine';
+import { GPUCanvas } from '@fluxgpu/react';
+import { GPUContext } from '@fluxgpu/engine';
 
 export default function ParticleDemo() {
   const [fps, setFps] = useState(0);

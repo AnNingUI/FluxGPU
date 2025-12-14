@@ -1,5 +1,5 @@
 {
-  "name": "@flux/dsl",
+  "name": "@fluxgpu/dsl",
   "version": "5.0.0",
   "description": "Type-safe functional shader DSL for WebGPU - write WGSL with TypeScript",
   "author": "AnNingUI",
@@ -39,7 +39,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@flux/contracts": "workspace:*"
+    "@fluxgpu/contracts": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.3.3",

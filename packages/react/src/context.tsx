@@ -3,7 +3,7 @@
  */
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { GPUContext } from '@flux/engine';
+import { GPUContext } from '@fluxgpu/engine';
 
 // ============================================================================
 // Context

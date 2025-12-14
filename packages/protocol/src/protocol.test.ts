@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { serializeCommand, deserializeCommand, RingBuffer, Command } from './protocol.js';
-import { CommandId, Opcode } from '@flux/contracts';
+import { CommandId, Opcode } from '@fluxgpu/contracts';
 
 describe('Protocol Serialization', () => {
   it('should serialize and deserialize a simple command', () => {

@@ -1,5 +1,5 @@
 {
-  "name": "@flux/solid",
+  "name": "@fluxgpu/solid",
   "version": "5.0.0",
   "description": "SolidJS primitives and components for FluxGPU - reactive GPU programming",
   "author": "AnNingUI",
@@ -39,8 +39,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@flux/dsl": "workspace:*",
-    "@flux/engine": "workspace:*",
+    "@fluxgpu/dsl": "workspace:*",
+    "@fluxgpu/engine": "workspace:*",
     "@webgpu/types": "^0.1.40"
   },
   "peerDependencies": {

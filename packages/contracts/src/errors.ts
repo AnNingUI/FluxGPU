@@ -62,6 +62,16 @@ export class FluxError extends Error {
 // ============================================================================
 
 /**
+ * General validation error
+ */
+export class ValidationError extends FluxError {
+  constructor(message: string, context?: Record<string, unknown>) {
+    super(message, 'VALIDATION_ERROR', context);
+    this.name = 'ValidationError';
+  }
+}
+
+/**
  * Error thrown when a circular dependency is detected
  */
 export class CircularDependencyError extends FluxError {
@@ -103,6 +113,16 @@ export class GraphTopologyError extends FluxError {
 // ============================================================================
 // Runtime Errors - All extend FluxError directly (max depth = 1)
 // ============================================================================
+
+/**
+ * General runtime error
+ */
+export class RuntimeError extends FluxError {
+  constructor(message: string, context?: Record<string, unknown>) {
+    super(message, 'RUNTIME_ERROR', context);
+    this.name = 'RuntimeError';
+  }
+}
 
 /**
  * Error thrown when GPU device is lost

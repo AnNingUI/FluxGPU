@@ -5,7 +5,7 @@
 /// <reference types="@webgpu/types" />
 
 import { useRef, useEffect, forwardRef, useImperativeHandle, type ReactNode } from 'react';
-import { GPUContext } from '@flux/engine';
+import { GPUContext } from '@fluxgpu/engine';
 import { FluxProvider, useFluxContext } from './context.js';
 import { useGPUContext, useGPUFrame } from './hooks.js';
 

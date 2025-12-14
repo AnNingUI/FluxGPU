@@ -1,4 +1,4 @@
-# @flux/host-browser
+# @fluxgpu/host-browser
 
 Browser runtime adapter for FluxGPU.
 
@@ -13,7 +13,7 @@ This package provides browser-specific implementations:
 ## Installation
 
 ```bash
-pnpm add @flux/host-browser
+pnpm add @fluxgpu/host-browser
 ```
 
 ## Usage
@@ -21,7 +21,7 @@ pnpm add @flux/host-browser
 ### Browser Adapter
 
 ```typescript
-import { BrowserAdapter } from '@flux/host-browser';
+import { BrowserAdapter } from '@fluxgpu/host-browser';
 
 const adapter = new BrowserAdapter();
 
@@ -41,6 +41,6 @@ adapter.onMessage((response) => {
 
 Part of the **Infrastructure Layer**, this package:
 
-- Implements browser-specific ports defined in `@flux/contracts`
+- Implements browser-specific ports defined in `@fluxgpu/contracts`
 - Manages Worker thread lifecycle
 - Handles DOM events and canvas integration

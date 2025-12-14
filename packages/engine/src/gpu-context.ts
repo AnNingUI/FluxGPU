@@ -6,8 +6,8 @@
 
 /// <reference types="@webgpu/types" />
 
-import type { StructType, StructFields, ArrayType, WGSLType } from '@flux/dsl';
-import { structSize, calculateStructLayout } from '@flux/dsl';
+import type { StructType, StructFields, ArrayType, WGSLType } from '@fluxgpu/dsl';
+import { structSize, calculateStructLayout } from '@fluxgpu/dsl';
 
 // ============================================================================
 // Types
@@ -82,7 +82,7 @@ export class TypedBuffer<T extends StructType> {
     this.device.queue.writeBuffer(this.buffer, 0, fullBuffer);
   }
   
-  /** 使用 Float32Array 直接写入（高性能） */
+  /** 使用 Float32Array 直接写入（高性能）*/
   writeRaw(data: Float32Array | Uint32Array | Int32Array): void {
     this.device.queue.writeBuffer(this.buffer, 0, data.buffer, data.byteOffset, data.byteLength);
   }
@@ -379,7 +379,7 @@ export class GPUContext {
     return this.context.getCurrentTexture().createView();
   }
   
-  /** 执行一帧（简化 API） */
+  /** 执行一帧（简化 API）*/
   frame(callback: (encoder: GPUCommandEncoder, target: GPUTextureView) => void): void {
     const encoder = this.createEncoder();
     const target = this.getCurrentTexture();
@@ -392,7 +392,7 @@ export class GPUContext {
 // Helper Functions
 // ============================================================================
 
-/** 简化的字段值类型 - 标量用 number，向量/矩阵用 number[] */
+/** 简化的字段值类型 - 标量为 number，向量/矩阵为 number[] */
 type StructFieldValues<T extends StructFields> = {
   [K in keyof T]?: number | number[];
 };

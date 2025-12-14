@@ -1,5 +1,5 @@
 {
-  "name": "@flux/host-browser",
+  "name": "@fluxgpu/host-browser",
   "version": "5.0.0",
   "description": "Browser runtime adapter for FluxGPU - Workers, DOM integration, and canvas management",
   "author": "AnNingUI",
@@ -37,8 +37,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@flux/contracts": "workspace:*",
-    "@flux/protocol": "workspace:*"
+    "@fluxgpu/contracts": "workspace:*",
+    "@fluxgpu/protocol": "workspace:*"
   },
   "devDependencies": {
     "@webgpu/types": "^0.1.67",

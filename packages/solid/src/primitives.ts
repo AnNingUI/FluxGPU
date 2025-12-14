@@ -5,8 +5,8 @@
 /// <reference types="@webgpu/types" />
 
 import { createSignal, createEffect, onCleanup, createMemo, type Accessor } from 'solid-js';
-import type { StructType } from '@flux/dsl';
-import { GPUContext, ComputePass, RenderPass, UniformBuffer } from '@flux/engine';
+import type { StructType } from '@fluxgpu/dsl';
+import { GPUContext, ComputePass, RenderPass, UniformBuffer } from '@fluxgpu/engine';
 
 // ============================================================================
 // createGPU - 主要的 GPU 初始化 primitive

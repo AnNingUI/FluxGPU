@@ -1,4 +1,4 @@
-# @flux/core
+# @fluxgpu/core
 
 Graph orchestration, shadow state management, and validation for FluxGPU.
 
@@ -13,7 +13,7 @@ This package provides the core domain logic:
 ## Installation
 
 ```bash
-pnpm add @flux/core
+pnpm add @fluxgpu/core
 ```
 
 ## Usage
@@ -21,7 +21,7 @@ pnpm add @flux/core
 ### Shadow State
 
 ```typescript
-import { ShadowState } from '@flux/core';
+import { ShadowState } from '@fluxgpu/core';
 
 const state = new ShadowState();
 
@@ -40,6 +40,6 @@ state.validateWrite('buffer-1', 0, 512); // throws if invalid
 
 Part of the **Domain Layer**, this package:
 
-- Depends only on `@flux/contracts`
+- Depends only on `@fluxgpu/contracts`
 - Contains pure business logic with no platform dependencies
 - Can be tested without any GPU or browser APIs

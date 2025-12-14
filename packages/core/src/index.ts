@@ -1,5 +1,5 @@
-// @flux/core - Domain logic
-// Depends only on @flux/contracts
+// @fluxgpu/core - Domain logic
+// Depends only on @fluxgpu/contracts
 export * from './flux.js';
 export * from './shadow-state.js';
 export * from './command-graph.js';

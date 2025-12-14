@@ -1,8 +1,8 @@
 /// <reference types="@webgpu/types" />
 
 import { useState, useRef, useCallback } from 'preact/hooks';
-import { GPUCanvas } from '@flux/preact';
-import { GPUContext } from '@flux/engine';
+import { GPUCanvas } from '@fluxgpu/preact';
+import { GPUContext } from '@fluxgpu/engine';
 import { Uniforms, generateComputeShader, generateVertexShader, generateFragmentShader } from './shaders';
 
 const PARTICLE_COUNT = 15000;
@@ -111,7 +111,7 @@ export default function App() {
     <div class="app">
       <header>
         <h1>🚀 FluxGPU Preact Demo</h1>
-        <p>Using @flux/preact GPUCanvas component</p>
+        <p>Using @fluxgpu/preact GPUCanvas component</p>
       </header>
       
       <main>

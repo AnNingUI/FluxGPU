@@ -1,6 +1,6 @@
 // Core Flux API with Dependency Injection
 // Implements the composition root where dependencies are wired together
-import type { IRuntimeAdapter, IExecutor } from '@flux/contracts';
+import type { IRuntimeAdapter, IExecutor } from '@fluxgpu/contracts';
 import { 
   Result, 
   Ok, 
@@ -10,7 +10,7 @@ import {
   ValidationError,
   RuntimeError,
   ErrorRecoveryContext
-} from '@flux/contracts';
+} from '@fluxgpu/contracts';
 import { ShadowStateManager } from './shadow-state.js';
 import { createCommandGraph, validateGraph, type GraphNode, type CommandGraph } from './command-graph.js';
 

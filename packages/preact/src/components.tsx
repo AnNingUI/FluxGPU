@@ -6,7 +6,7 @@
 
 import { useRef, useEffect } from 'preact/hooks';
 import type { ComponentChildren, JSX } from 'preact';
-import { GPUContext } from '@flux/engine';
+import { GPUContext } from '@fluxgpu/engine';
 import { useGPUContext, useGPUFrame } from './hooks.js';
 
 // ============================================================================

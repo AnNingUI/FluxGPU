@@ -1,27 +1,27 @@
 # Type-Safe WGSL DSL (v2)
 
-完整的类型安全 WGSL 着色器 DSL，提供完整的 TypeScript 类型推断和 IntelliSense 支持。
+完整的类型安�?WGSL 着色器 DSL，提供完整的 TypeScript 类型推断�?IntelliSense 支持�?
 
-## 特性
+## 特�?
 
-✅ **完整的类型安全** - 所有 WGSL 类型都有对应的 TypeScript 类型  
-✅ **智能类型推断** - 自动推断表达式类型  
-✅ **结构体字段访问** - 类型安全的字段访问，错误的字段名会在编译时报错  
-✅ **向量 Swizzling** - 完整支持 `.x`, `.xy`, `.rgb` 等  
-✅ **所有 WGSL 内置函数** - 100+ 个内置函数，全部类型安全  
-✅ **操作符重载** - 支持 `+`, `-`, `*`, `/`, `==`, `<` 等所有操作符  
-✅ **Unsafe 逃生舱** - 需要时可以注入原始 WGSL 代码  
+�?**完整的类型安�?* - 所�?WGSL 类型都有对应�?TypeScript 类型  
+�?**智能类型推断** - 自动推断表达式类�? 
+�?**结构体字段访�?* - 类型安全的字段访问，错误的字段名会在编译时报�? 
+�?**向量 Swizzling** - 完整支持 `.x`, `.xy`, `.rgb` �? 
+�?**所�?WGSL 内置函数** - 100+ 个内置函数，全部类型安全  
+�?**操作符重�?* - 支持 `+`, `-`, `*`, `/`, `==`, `<` 等所有操作符  
+�?**Unsafe 逃生�?* - 需要时可以注入原始 WGSL 代码  
 
-## 快速开始
+## 快速开�?
 
 ```typescript
-import { DSLv2, TypeSystem, Builtins } from '@flux/dsl';
+import { DSLv2, TypeSystem, Builtins } from '@fluxgpu/dsl';
 
 const { shader } = DSLv2;
 const { f32, vec2, vec3, array, struct } = TypeSystem;
 const { normalize, length, dot } = Builtins;
 
-// 定义结构体
+// 定义结构�?
 const ParticleType = struct('Particle', {
   position: vec3(f32),
   velocity: vec3(f32),
@@ -45,23 +45,23 @@ const code = shader()
       'read_write'
     );
 
-    // 类型安全的变量声明
+    // 类型安全的变量声�?
     const index = ctx.let('index', u32, lit(0, u32));
     const particle = ctx.var('particle', ParticleType, particles.at(index));
     
-    // 类型安全的字段访问 - IDE 会提示可用字段！
+    // 类型安全的字段访�?- IDE 会提示可用字段！
     const pos = particle.field('position');
     const vel = particle.field('velocity');
     const mass = particle.field('mass');
     
-    // 类型安全的向量操作
+    // 类型安全的向量操�?
     const dir = normalize(vel);
     const speed = length(vel);
     
-    // 类型安全的算术运算
+    // 类型安全的算术运�?
     const newVel = vel.add(dir.mul(speed));
     
-    // 赋值
+    // 赋�?
     ctx.unsafeInjectWGSL(vel.assign(newVel));
   })
   .build();
@@ -74,10 +74,10 @@ console.log(code);
 ### 标量类型
 
 ```typescript
-import { TypeSystem } from '@flux/dsl';
+import { TypeSystem } from '@fluxgpu/dsl';
 const { bool, i32, u32, f32, f16 } = TypeSystem;
 
-// 创建字面量
+// 创建字面�?
 const x = lit(1.0, f32);  // f32
 const y = lit(42, i32);   // i32
 const z = litBool(true);  // bool
@@ -93,10 +93,10 @@ const v2 = vec2(f32);  // vec2<f32>
 const v3 = vec3(i32);  // vec3<i32>
 const v4 = vec4(u32);  // vec4<u32>
 
-// 向量字面量
+// 向量字面�?
 const pos = litVec3(1.0, 2.0, 3.0);
 
-// Swizzling - 完全类型安全！
+// Swizzling - 完全类型安全�?
 const x = pos.x;      // Expr<F32Type>
 const xy = pos.xy;    // VecExpr<Vec2Type<F32Type>>
 const rgb = pos.rgb;  // VecExpr<Vec3Type<F32Type>>
@@ -118,11 +118,11 @@ const { array } = TypeSystem;
 // 固定大小数组
 const arr1 = array(f32, 100);
 
-// 运行时大小数组
+// 运行时大小数�?
 const arr2 = array(vec3(f32));
 ```
 
-### 结构体类型
+### 结构体类�?
 
 ```typescript
 const { struct } = TypeSystem;
@@ -142,7 +142,7 @@ const ParticleType = struct('Particle', {
 ### 数学函数
 
 ```typescript
-import { Builtins } from '@flux/dsl';
+import { Builtins } from '@fluxgpu/dsl';
 const {
   abs, acos, asin, atan, atan2,
   ceil, floor, round, trunc, fract,
@@ -183,7 +183,7 @@ const norm = normalize(v1);      // VecExpr<Vec3Type<F32Type>>
 ```typescript
 const { determinant, transpose } = Builtins;
 
-// 类型安全的矩阵操作
+// 类型安全的矩阵操�?
 ```
 
 ### 比较函数
@@ -195,9 +195,9 @@ const condition = x.gt(lit(0.5));
 const result = select(lit(0.0), lit(1.0), condition);
 ```
 
-## 操作符
+## 操作�?
 
-### 算术操作符
+### 算术操作�?
 
 ```typescript
 const a = lit(1.0);
@@ -211,7 +211,7 @@ const mod = a.mod(b);      // a % b
 const neg = a.neg();       // -a
 ```
 
-### 比较操作符
+### 比较操作�?
 
 ```typescript
 const eq = a.eq(b);        // a == b  -> Expr<BoolType>
@@ -222,7 +222,7 @@ const gt = a.gt(b);        // a > b
 const ge = a.ge(b);        // a >= b
 ```
 
-### 逻辑操作符
+### 逻辑操作�?
 
 ```typescript
 const cond1 = litBool(true);
@@ -259,7 +259,7 @@ ctx.unsafeInjectWGSL(x.divAssign(y));     // x /= y
 ctx.unsafeInjectWGSL(x.modAssign(y));     // x %= y
 ```
 
-## 控制流
+## 控制�?
 
 ### If 语句
 
@@ -285,11 +285,11 @@ shader().compute([64], (ctx) => {
 
 ```typescript
 ctx.for(
-  'var i = 0u',                    // 初始化
+  'var i = 0u',                    // 初始�?
   lit(10, u32).gt(lit(0, u32)),   // 条件
   'i = i + 1u',                    // 更新
   () => {
-    // 循环体
+    // 循环�?
   }
 );
 ```
@@ -300,15 +300,15 @@ ctx.for(
 ctx.while(
   condition,
   () => {
-    // 循环体
+    // 循环�?
   }
 );
 ```
 
-## 完整示例：粒子系统
+## 完整示例：粒子系�?
 
 ```typescript
-import { DSLv2, TypeSystem, Builtins } from '@flux/dsl';
+import { DSLv2, TypeSystem, Builtins } from '@fluxgpu/dsl';
 
 const { shader } = DSLv2;
 const { f32, vec2, vec3, array, struct } = TypeSystem;
@@ -359,7 +359,7 @@ const computeShader = shader()
     const particle = ctx.var('particle', ParticleType);
     ctx.unsafeInjectWGSL(`particle = particles[index];`);
     
-    // 计算力
+    // 计算�?
     const toTarget = particle.field('targetPos').sub(particle.field('position'));
     const distance = length(toTarget);
     const direction = normalize(toTarget);
@@ -388,11 +388,11 @@ const computeShader = shader()
 console.log(computeShader);
 ```
 
-## 与旧 API 的对比
+## 与旧 API 的对�?
 
-### 旧 API (v1)
+### �?API (v1)
 ```typescript
-// 需要手写字符串，没有类型检查
+// 需要手写字符串，没有类型检�?
 const code = `
 struct Particle {
   position: vec2<f32>,
@@ -407,9 +407,9 @@ fn main() {
 `;
 ```
 
-### 新 API (v2)
+### �?API (v2)
 ```typescript
-// 完全类型安全，IDE 会提示所有可用字段
+// 完全类型安全，IDE 会提示所有可用字�?
 const code = shader()
   .defineStruct('Particle', {
     position: vec2(f32),
@@ -422,18 +422,18 @@ const code = shader()
   .build();
 ```
 
-## 最佳实践
+## 最佳实�?
 
-1. **使用类型推断** - 让 TypeScript 自动推断类型
-2. **避免过度使用 unsafeInjectWGSL** - 尽量使用类型安全的 API
-3. **定义可重用的结构体** - 在多个着色器间共享类型定义
-4. **利用 IntelliSense** - IDE 会提示所有可用的方法和字段
-5. **组合小函数** - 使用 `.fn()` 定义可重用的着色器函数
+1. **使用类型推断** - �?TypeScript 自动推断类型
+2. **避免过度使用 unsafeInjectWGSL** - 尽量使用类型安全�?API
+3. **定义可重用的结构�?* - 在多个着色器间共享类型定�?
+4. **利用 IntelliSense** - IDE 会提示所有可用的方法和字�?
+5. **组合小函�?* - 使用 `.fn()` 定义可重用的着色器函数
 
 ## 未来计划
 
-- [ ] 更好的控制流 API（不需要 unsafeInjectWGSL）
-- [ ] 纹理和采样器的完整支持
+- [ ] 更好的控制流 API（不需�?unsafeInjectWGSL�?
+- [ ] 纹理和采样器的完整支�?
 - [ ] 自动生成绑定组布局
 - [ ] 着色器优化和死代码消除
-- [ ] 更多示例和文档
+- [ ] 更多示例和文�?

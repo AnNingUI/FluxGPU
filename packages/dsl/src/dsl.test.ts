@@ -76,7 +76,7 @@ describe('Unified DSL: Type-Safe Shader Construction', () => {
         const posX = particle.$('position').x;
         const posY = particle.$('position').y;
 
-        // 使用 posX 和 posY 进行边界检测 - 类型安全的分量赋值
+        // 使用 posX 和 posY 进行边界检查 - 类型安全的分量赋值
         ctx.if(posX.lt(lit(-1.0, f32)).or(posX.gt(lit(1.0, f32))), () => {
           ctx.exec(particle.$('velocity').x.mulEq(lit(-1.0, f32)));
         });

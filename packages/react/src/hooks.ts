@@ -5,8 +5,8 @@
 /// <reference types="@webgpu/types" />
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import type { StructType } from '@flux/dsl';
-import { GPUContext, ComputePass, RenderPass, UniformBuffer } from '@flux/engine';
+import type { StructType } from '@fluxgpu/dsl';
+import { GPUContext, ComputePass, RenderPass, UniformBuffer } from '@fluxgpu/engine';
 
 // ============================================================================
 // useGPUContext - 独立初始化 hook

@@ -1,3 +1,3 @@
-// @flux/protocol - Binary communication protocol
-// Depends only on @flux/contracts
+// @fluxgpu/protocol - Binary communication protocol
+// Depends only on @fluxgpu/contracts
 export * from './protocol.js';

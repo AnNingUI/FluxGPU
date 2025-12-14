@@ -1,4 +1,4 @@
-# @flux/engine
+# @fluxgpu/engine
 
 WebGPU executor and high-level API for FluxGPU.
 
@@ -14,7 +14,7 @@ This package provides the main GPU abstraction layer:
 ## Installation
 
 ```bash
-pnpm add @flux/engine @flux/dsl
+pnpm add @fluxgpu/engine @fluxgpu/dsl
 ```
 
 ## Usage
@@ -22,7 +22,7 @@ pnpm add @flux/engine @flux/dsl
 ### Initialize GPU Context
 
 ```typescript
-import { GPUContext } from '@flux/engine';
+import { GPUContext } from '@fluxgpu/engine';
 
 const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 const gpu = await GPUContext.create({ canvas });
@@ -66,7 +66,7 @@ gpu.frame((encoder, target) => {
 ### Uniform Buffers
 
 ```typescript
-import { defineStruct, f32, vec2 } from '@flux/dsl';
+import { defineStruct, f32, vec2 } from '@fluxgpu/dsl';
 
 const Uniforms = defineStruct('Uniforms', {
   time: f32,

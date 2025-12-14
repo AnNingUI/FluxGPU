@@ -1,4 +1,4 @@
-# @flux/protocol
+# @fluxgpu/protocol
 
 Platform-agnostic binary communication protocol for FluxGPU.
 
@@ -13,7 +13,7 @@ This package provides efficient serialization for GPU commands, enabling:
 ## Installation
 
 ```bash
-pnpm add @flux/protocol
+pnpm add @fluxgpu/protocol
 ```
 
 ## Usage
@@ -21,9 +21,9 @@ pnpm add @flux/protocol
 ### Serialize Commands
 
 ```typescript
-import { serializeCommand, deserializeCommand } from '@flux/protocol';
-import type { CommandBuffer } from '@flux/contracts';
-import { Opcode } from '@flux/contracts';
+import { serializeCommand, deserializeCommand } from '@fluxgpu/protocol';
+import type { CommandBuffer } from '@fluxgpu/contracts';
+import { Opcode } from '@fluxgpu/contracts';
 
 const command: CommandBuffer = {
   id: 'cmd-001',
@@ -42,7 +42,7 @@ const restored = deserializeCommand(bytes);
 ### Batch Operations
 
 ```typescript
-import { serializeBatch, deserializeBatch } from '@flux/protocol';
+import { serializeBatch, deserializeBatch } from '@fluxgpu/protocol';
 
 const commands = [command1, command2, command3];
 const batch = serializeBatch(commands);
@@ -54,10 +54,10 @@ const restored = deserializeBatch(batch);
 Commands are serialized as:
 
 ```
-┌──────────┬──────────┬──────────┬──────────┬──────────┐
-│  Header  │  Opcode  │  ID Len  │    ID    │ Payload  │
-│  4 bytes │  1 byte  │  2 bytes │  N bytes │  M bytes │
-└──────────┴──────────┴──────────┴──────────┴──────────┘
+┌──────────┬──────────┬──────────┬──────────┬──────────�?
+�? Header  �? Opcode  �? ID Len  �?   ID    �?Payload  �?
+�? 4 bytes �? 1 byte  �? 2 bytes �? N bytes �? M bytes �?
+└──────────┴──────────┴──────────┴──────────┴──────────�?
 ```
 
 ## Architecture Role

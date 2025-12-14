@@ -81,7 +81,7 @@ interface StructLayout {
 
 /**
  * 获取 WGSL 类型的大小和对齐要求
- * 参考: https://www.w3.org/TR/WGSL/#alignment-and-size
+ * 参考 https://www.w3.org/TR/WGSL/#alignment-and-size
  */
 function getTypeLayout(type: WGSLType): { size: number; align: number } {
   const wgslType = type.__wgslType;
@@ -618,7 +618,7 @@ export interface FragmentBuiltins {
   sampleMask: Expr<U32Type>;
 }
 
-/** 片段输入配置（来自顶点着色器的 varyings） */
+/** 片段输入配置（来自顶点着色器的 varyings）*/
 export interface FragmentInput {
   location: number;
   type: WGSLType;

@@ -1,5 +1,5 @@
 /**
- * @flux/solid - SolidJS bindings for FluxGPU
+ * @fluxgpu/solid - SolidJS bindings for FluxGPU
  * 
  * Provides primitives and components for easy WebGPU integration in SolidJS apps.
  */

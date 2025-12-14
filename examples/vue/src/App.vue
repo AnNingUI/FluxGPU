@@ -2,8 +2,8 @@
 /// <reference types="@webgpu/types" />
 
 import { ref, computed } from 'vue';
-import { GPUCanvas, GPUStats } from '@flux/vue';
-import { GPUContext } from '@flux/engine';
+import { GPUCanvas, GPUStats } from '@fluxgpu/vue';
+import { GPUContext } from '@fluxgpu/engine';
 import { Uniforms, generateComputeShader, generateVertexShader, generateFragmentShader } from './shaders';
 
 const PARTICLE_COUNT = 15000;
@@ -117,7 +117,7 @@ function handleMouseMove(e: MouseEvent) {
   <div class="app">
     <header>
       <h1>🚀 FluxGPU Vue Demo</h1>
-      <p>Using @flux/vue GPUCanvas component</p>
+      <p>Using @fluxgpu/vue GPUCanvas component</p>
     </header>
     
     <main>

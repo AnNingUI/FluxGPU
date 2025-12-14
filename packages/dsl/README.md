@@ -1,4 +1,4 @@
-# @flux/dsl
+# @fluxgpu/dsl
 
 Type-safe functional shader composition DSL for WebGPU.
 
@@ -9,7 +9,7 @@ Write WGSL shaders using TypeScript with full type inference, composable atoms, 
 ## Installation
 
 ```bash
-pnpm add @flux/dsl
+pnpm add @fluxgpu/dsl
 ```
 
 ## Usage
@@ -17,7 +17,7 @@ pnpm add @flux/dsl
 ### Define Structs
 
 ```typescript
-import { defineStruct, f32, vec2, vec3, array } from '@flux/dsl';
+import { defineStruct, f32, vec2, vec3, array } from '@fluxgpu/dsl';
 
 const Particle = defineStruct('Particle', {
   position: vec2(f32),
@@ -36,7 +36,7 @@ const Uniforms = defineStruct('Uniforms', {
 ### Compute Shader
 
 ```typescript
-import { shader, u32, length, normalize } from '@flux/dsl';
+import { shader, u32, length, normalize } from '@fluxgpu/dsl';
 
 const computeShader = shader()
   .storage('particles', array(Particle), 0, 0, 'read_write')

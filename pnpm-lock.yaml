@@ -17,13 +17,13 @@ importers:
 
   examples/preact:
     dependencies:
-      '@flux/dsl':
+      '@fluxgpu/dsl':
         specifier: workspace:*
         version: link:../../packages/dsl
-      '@flux/engine':
+      '@fluxgpu/engine':
         specifier: workspace:*
         version: link:../../packages/engine
-      '@flux/preact':
+      '@fluxgpu/preact':
         specifier: workspace:*
         version: link:../../packages/preact
       preact:
@@ -45,13 +45,13 @@ importers:
 
   examples/react:
     dependencies:
-      '@flux/dsl':
+      '@fluxgpu/dsl':
         specifier: workspace:*
         version: link:../../packages/dsl
-      '@flux/engine':
+      '@fluxgpu/engine':
         specifier: workspace:*
         version: link:../../packages/engine
-      '@flux/react':
+      '@fluxgpu/react':
         specifier: workspace:*
         version: link:../../packages/react
       react:
@@ -82,13 +82,13 @@ importers:
 
   examples/solid:
     dependencies:
-      '@flux/dsl':
+      '@fluxgpu/dsl':
         specifier: workspace:*
         version: link:../../packages/dsl
-      '@flux/engine':
+      '@fluxgpu/engine':
         specifier: workspace:*
         version: link:../../packages/engine
-      '@flux/solid':
+      '@fluxgpu/solid':
         specifier: workspace:*
         version: link:../../packages/solid
       solid-js:
@@ -110,22 +110,22 @@ importers:
 
   examples/vanilla:
     dependencies:
-      '@flux/contracts':
+      '@fluxgpu/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
-      '@flux/core':
+      '@fluxgpu/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@flux/dsl':
+      '@fluxgpu/dsl':
         specifier: workspace:*
         version: link:../../packages/dsl
-      '@flux/engine':
+      '@fluxgpu/engine':
         specifier: workspace:*
         version: link:../../packages/engine
-      '@flux/host-browser':
+      '@fluxgpu/host-browser':
         specifier: workspace:*
         version: link:../../packages/host-browser
-      '@flux/protocol':
+      '@fluxgpu/protocol':
         specifier: workspace:*
         version: link:../../packages/protocol
     devDependencies:
@@ -141,13 +141,13 @@ importers:
 
   examples/vue:
     dependencies:
-      '@flux/dsl':
+      '@fluxgpu/dsl':
         specifier: workspace:*
         version: link:../../packages/dsl
-      '@flux/engine':
+      '@fluxgpu/engine':
         specifier: workspace:*
         version: link:../../packages/engine
-      '@flux/vue':
+      '@fluxgpu/vue':
         specifier: workspace:*
         version: link:../../packages/vue
       vue:
@@ -194,7 +194,7 @@ importers:
 
   packages/core:
     dependencies:
-      '@flux/contracts':
+      '@fluxgpu/contracts':
         specifier: workspace:*
         version: link:../contracts
     devDependencies:
@@ -207,7 +207,7 @@ importers:
 
   packages/dsl:
     dependencies:
-      '@flux/contracts':
+      '@fluxgpu/contracts':
         specifier: workspace:*
         version: link:../contracts
     devDependencies:
@@ -220,13 +220,13 @@ importers:
 
   packages/engine:
     dependencies:
-      '@flux/contracts':
+      '@fluxgpu/contracts':
         specifier: workspace:*
         version: link:../contracts
-      '@flux/dsl':
+      '@fluxgpu/dsl':
         specifier: workspace:*
         version: link:../dsl
-      '@flux/protocol':
+      '@fluxgpu/protocol':
         specifier: workspace:*
         version: link:../protocol
       '@webgpu/types':
@@ -242,10 +242,10 @@ importers:
 
   packages/host-browser:
     dependencies:
-      '@flux/contracts':
+      '@fluxgpu/contracts':
         specifier: workspace:*
         version: link:../contracts
-      '@flux/protocol':
+      '@fluxgpu/protocol':
         specifier: workspace:*
         version: link:../protocol
     devDependencies:
@@ -261,10 +261,10 @@ importers:
 
   packages/preact:
     dependencies:
-      '@flux/dsl':
+      '@fluxgpu/dsl':
         specifier: workspace:*
         version: link:../dsl
-      '@flux/engine':
+      '@fluxgpu/engine':
         specifier: workspace:*
         version: link:../engine
       '@webgpu/types':
@@ -280,7 +280,7 @@ importers:
 
   packages/protocol:
     dependencies:
-      '@flux/contracts':
+      '@fluxgpu/contracts':
         specifier: workspace:*
         version: link:../contracts
     devDependencies:
@@ -293,10 +293,10 @@ importers:
 
   packages/react:
     dependencies:
-      '@flux/dsl':
+      '@fluxgpu/dsl':
         specifier: workspace:*
         version: link:../dsl
-      '@flux/engine':
+      '@fluxgpu/engine':
         specifier: workspace:*
         version: link:../engine
       '@webgpu/types':
@@ -315,10 +315,10 @@ importers:
 
   packages/solid:
     dependencies:
-      '@flux/dsl':
+      '@fluxgpu/dsl':
         specifier: workspace:*
         version: link:../dsl
-      '@flux/engine':
+      '@fluxgpu/engine':
         specifier: workspace:*
         version: link:../engine
       '@webgpu/types':
@@ -334,10 +334,10 @@ importers:
 
   packages/vue:
     dependencies:
-      '@flux/dsl':
+      '@fluxgpu/dsl':
         specifier: workspace:*
         version: link:../dsl
-      '@flux/engine':
+      '@fluxgpu/engine':
         specifier: workspace:*
         version: link:../engine
       '@webgpu/types':

@@ -47,12 +47,12 @@ Forbidden global variable access: 'window'. Domain packages must not access plat
 
 **Fix:** Use dependency injection instead:
 ```typescript
-// ‚ùå Bad - Direct global access
+// ‚ù?Bad - Direct global access
 export function getWidth() {
   return window.innerWidth;
 }
 
-// ‚úÖ Good - Injected adapter
+// ‚ú?Good - Injected adapter
 export function getWidth(adapter: IRuntimeAdapter) {
   return adapter.getWindowWidth();
 }
@@ -69,12 +69,12 @@ Use composition instead of deep inheritance.
 
 **Fix:** Use composition:
 ```typescript
-// ‚ùå Bad - Deep inheritance
+// ‚ù?Bad - Deep inheritance
 class Base { }
 class Middle extends Base { }
 class DeepDerived extends Middle { } // Depth 2!
 
-// ‚úÖ Good - Composition
+// ‚ú?Good - Composition
 class Base { }
 class Composed {
   private base: Base;
@@ -207,24 +207,24 @@ FluxGPU prefers:
 ### Valid Domain Code
 
 ```typescript
-// ‚úì Pure function
+// ‚ú?Pure function
 export function add(a: number, b: number): number {
   return a + b;
 }
 
-// ‚úì Interface usage
+// ‚ú?Interface usage
 export function createExecutor(adapter: IRuntimeAdapter): IExecutor {
   return adapter.createExecutor();
 }
 
-// ‚úì Single-level inheritance (from external class)
+// ‚ú?Single-level inheritance (from external class)
 export class FluxError extends Error {
   constructor(message: string) {
     super(message);
   }
 }
 
-// ‚úì Composition
+// ‚ú?Composition
 export class Pipeline {
   private operations: Operation[] = [];
   
@@ -237,17 +237,17 @@ export class Pipeline {
 ### Invalid Domain Code
 
 ```typescript
-// ‚úó Global access
+// ‚ú?Global access
 export function getGPU() {
   return navigator.gpu; // Forbidden!
 }
 
-// ‚úó Deep inheritance
+// ‚ú?Deep inheritance
 class Base { }
 class Middle extends Base { }
 class Deep extends Middle { } // Depth 2 - Forbidden!
 
-// ‚úó Worker creation
+// ‚ú?Worker creation
 export function startWorker() {
   return new Worker('./worker.js'); // Forbidden!
 }

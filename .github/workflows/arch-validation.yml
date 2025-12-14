@@ -40,7 +40,7 @@ jobs:
         run: pnpm install
 
       - name: Build arch-validator
-        run: pnpm --filter @flux/arch-validator build
+        run: pnpm --filter @fluxgpu/arch-validator build
 
       - name: Run architectural validation
         run: node packages/arch-validator/dist/cli.js

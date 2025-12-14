@@ -1,5 +1,5 @@
 {
-  "name": "@flux/example-vue",
+  "name": "@fluxgpu/example-vue",
   "version": "1.0.0",
   "private": true,
   "description": "FluxGPU Vue Demo",
@@ -10,9 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@flux/dsl": "workspace:*",
-    "@flux/engine": "workspace:*",
-    "@flux/vue": "workspace:*",
+    "@fluxgpu/dsl": "workspace:*",
+    "@fluxgpu/engine": "workspace:*",
+    "@fluxgpu/vue": "workspace:*",
     "vue": "^3.4.0"
   },
   "devDependencies": {

@@ -1,5 +1,5 @@
 /**
- * @flux/vue - Vue bindings for FluxGPU
+ * @fluxgpu/vue - Vue bindings for FluxGPU
  * 
  * Provides composables and components for easy WebGPU integration in Vue apps.
  */

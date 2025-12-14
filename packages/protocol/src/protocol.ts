@@ -1,10 +1,10 @@
-import { CommandBuffer, CommandId, Opcode } from '@flux/contracts';
+import { CommandBuffer, CommandId, Opcode } from '@fluxgpu/contracts';
 import { 
   SerializationError, 
   DeserializationError, 
   BufferOverflowError,
   CorruptedMessageError 
-} from '@flux/contracts';
+} from '@fluxgpu/contracts';
 
 // Re-export Command interface from contracts as Command for convenience
 export type Command = CommandBuffer;

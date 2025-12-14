@@ -58,11 +58,11 @@ export class ArchitectureValidator {
 
   printResults(result: ValidationResult): void {
     if (result.valid) {
-      console.log('âœ“ All architectural constraints validated successfully');
+      console.log('âœ?All architectural constraints validated successfully');
       return;
     }
 
-    console.error(`âœ— Found ${result.errors.length} architectural constraint violation(s):\n`);
+    console.error(`âœ?Found ${result.errors.length} architectural constraint violation(s):\n`);
 
     // Group errors by file
     const errorsByFile = new Map<string, typeof result.errors>();
@@ -80,7 +80,7 @@ export class ArchitectureValidator {
       }
     }
 
-    console.error(`\nâœ— ${result.errors.length} error(s) found`);
+    console.error(`\nâœ?${result.errors.length} error(s) found`);
   }
 }
 

@@ -202,12 +202,12 @@ export function logFeatureSupport(): void {
   console.log('Secure Context:', isSecureContext());
   console.log('');
   console.log('Feature Support:');
-  console.log('  WebGPU:', support.webgpu ? '✓' : '✗');
-  console.log('  SharedArrayBuffer:', support.sharedArrayBuffer ? '✓' : '✗');
-  console.log('  Web Workers:', support.workers ? '✓' : '✗');
-  console.log('  OffscreenCanvas:', support.offscreenCanvas ? '✓' : '✗');
-  console.log('  Atomics:', support.atomics ? '✓' : '✗');
-  console.log('  WebGL2:', support.webgl2 ? '✓' : '✗');
+  console.log('  WebGPU:', support.webgpu ? 'Yes' : 'No');
+  console.log('  SharedArrayBuffer:', support.sharedArrayBuffer ? 'Yes' : 'No');
+  console.log('  Web Workers:', support.workers ? 'Yes' : 'No');
+  console.log('  OffscreenCanvas:', support.offscreenCanvas ? 'Yes' : 'No');
+  console.log('  Atomics:', support.atomics ? 'Yes' : 'No');
+  console.log('  WebGL2:', support.webgl2 ? 'Yes' : 'No');
   console.groupEnd();
   
   if (!areRequiredFeaturesSupported()) {

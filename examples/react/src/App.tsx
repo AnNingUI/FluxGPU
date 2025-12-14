@@ -1,8 +1,8 @@
 /// <reference types="@webgpu/types" />
 
 import { useState, useRef, useMemo, useCallback } from 'react';
-import { GPUCanvas, type GPUCanvasRef } from '@flux/react';
-import { GPUContext } from '@flux/engine';
+import { GPUCanvas, type GPUCanvasRef } from '@fluxgpu/react';
+import { GPUContext } from '@fluxgpu/engine';
 import { Uniforms, generateComputeShader, generateVertexShader, generateFragmentShader } from './shaders';
 
 const PARTICLE_COUNT = 15000;
@@ -112,7 +112,7 @@ export default function App() {
     <div className="app">
       <header>
         <h1>🚀 FluxGPU React Demo</h1>
-        <p>Using @flux/react GPUCanvas component</p>
+        <p>Using @fluxgpu/react GPUCanvas component</p>
       </header>
       
       <main>

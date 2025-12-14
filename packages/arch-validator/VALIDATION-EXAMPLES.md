@@ -7,73 +7,73 @@ This document demonstrates how the DependencyValidator catches architectural vio
 ### Contracts Package
 ```json
 {
-  "name": "@flux/contracts",
+  "name": "@fluxgpu/contracts",
   "dependencies": {}
 }
 ```
-‚úÖ Contracts has zero runtime dependencies
+‚ú?Contracts has zero runtime dependencies
 
 ### Core Package
 ```json
 {
-  "name": "@flux/core",
+  "name": "@fluxgpu/core",
   "dependencies": {
-    "@flux/contracts": "workspace:*"
+    "@fluxgpu/contracts": "workspace:*"
   }
 }
 ```
-‚úÖ Core depends only on contracts
+‚ú?Core depends only on contracts
 
 ### Infrastructure Package
 ```json
 {
-  "name": "@flux/engine",
+  "name": "@fluxgpu/engine",
   "dependencies": {
-    "@flux/contracts": "workspace:*",
-    "@flux/protocol": "workspace:*",
+    "@fluxgpu/contracts": "workspace:*",
+    "@fluxgpu/protocol": "workspace:*",
     "@webgpu/types": "^0.1.40"
   }
 }
 ```
-‚úÖ Engine depends on contracts and protocol, plus external dependencies
+‚ú?Engine depends on contracts and protocol, plus external dependencies
 
 ## Invalid Configurations
 
 ### Contracts with Dependencies
 ```json
 {
-  "name": "@flux/contracts",
+  "name": "@fluxgpu/contracts",
   "dependencies": {
-    "@flux/core": "workspace:*"
+    "@fluxgpu/core": "workspace:*"
   }
 }
 ```
-‚ùå Error: Contracts package must have zero runtime dependencies
+‚ù?Error: Contracts package must have zero runtime dependencies
 
 ### Core with Invalid Dependencies
 ```json
 {
-  "name": "@flux/core",
+  "name": "@fluxgpu/core",
   "dependencies": {
-    "@flux/contracts": "workspace:*",
-    "@flux/protocol": "workspace:*"
+    "@fluxgpu/contracts": "workspace:*",
+    "@fluxgpu/protocol": "workspace:*"
   }
 }
 ```
-‚ùå Error: @flux/core must depend only on @flux/contracts
+‚ù?Error: @fluxgpu/core must depend only on @fluxgpu/contracts
 
 ### Infrastructure with Domain Dependencies
 ```json
 {
-  "name": "@flux/engine",
+  "name": "@fluxgpu/engine",
   "dependencies": {
-    "@flux/contracts": "workspace:*",
-    "@flux/protocol": "workspace:*",
-    "@flux/core": "workspace:*"
+    "@fluxgpu/contracts": "workspace:*",
+    "@fluxgpu/protocol": "workspace:*",
+    "@fluxgpu/core": "workspace:*"
   }
 }
 ```
-‚ùå Error: Infrastructure package must depend only on @flux/contracts and @flux/protocol
+‚ù?Error: Infrastructure package must depend only on @fluxgpu/contracts and @fluxgpu/protocol
 
 ## Testing Violations
 
@@ -100,5 +100,5 @@ Validating domain packages:
   - packages/core
   - packages/dsl
 
-‚úì All architectural constraints validated successfully
+‚ú?All architectural constraints validated successfully
 ```
