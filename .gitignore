@@ -5,3 +5,8 @@ dist/
 *.tsbuildinfo
 coverage/
 .pnpm-debug.log
+
+# IDEA
+.kiro
+.claude
+.vscode
