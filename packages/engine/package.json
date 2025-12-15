@@ -1,6 +1,6 @@
 {
   "name": "@fluxgpu/engine",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "description": "WebGPU execution engine - high-level API for compute and render pipelines",
   "author": "AnNingUI",
   "license": "MIT",
@@ -38,10 +38,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@fluxgpu/contracts": "workspace:*",
-    "@fluxgpu/dsl": "workspace:*",
-    "@fluxgpu/protocol": "workspace:*",
-    "@webgpu/types": "^0.1.40"
+    "@fluxgpu/contracts": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.3.3",

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FluxGPU - Worker Mode Demo (host-browser)</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0a0a0f;
+      color: #e0e0e0;
+      min-height: 100vh;
+    }
+    .header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      padding: 20px 40px;
+      border-bottom: 1px solid #333;
+    }
+    .header h1 { font-size: 24px; color: #fff; }
+    .header p { color: #888; margin-top: 5px; }
+    .header .badge {
+      display: inline-block;
+      background: #4fc3f7;
+      color: #000;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    .main {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      height: calc(100vh - 80px);
+    }
+    .canvas-container { position: relative; background: #000; }
+    #gpuCanvas { width: 100%; height: 100%; display: block; }
+    .overlay {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(0,0,0,0.7);
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .overlay .stat { display: flex; justify-content: space-between; margin: 5px 0; gap: 20px; }
+    .overlay .stat span:last-child { color: #4fc3f7; font-weight: bold; }
+    .sidebar {
+      background: #111;
+      padding: 20px;
+      overflow-y: auto;
+      border-left: 1px solid #333;
+    }
+    .section { margin-bottom: 25px; }
+    .section h3 {
+      color: #4fc3f7;
+      font-size: 14px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #333;
+    }
+    .feature-list { display: flex; flex-direction: column; gap: 8px; }
+    .feature {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: #1a1a2e;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    .feature .status { font-weight: bold; }
+    .feature .status.yes { color: #4caf50; }
+    .feature .status.no { color: #f44336; }
+    .packages { display: flex; flex-wrap: wrap; gap: 8px; }
+    .package {
+      background: #1a1a2e;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      border: 1px solid #333;
+    }
+    .package.active { border-color: #4fc3f7; color: #4fc3f7; }
+    .package.highlight { border-color: #ff9800; color: #ff9800; }
+    .status-box { padding: 15px; border-radius: 8px; font-size: 13px; }
+    .status-box.success { background: #1b5e20; }
+    .status-box.error { background: #b71c1c; }
+    .status-box.info { background: #1a237e; }
+    .status-box.warning { background: #e65100; }
+    .architecture {
+      background: #1a1a1a;
+      border-radius: 6px;
+      padding: 15px;
+      font-family: 'Fira Code', monospace;
+      font-size: 11px;
+      white-space: pre;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    .log-container {
+      background: #1a1a1a;
+      border-radius: 6px;
+      padding: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+      font-family: 'Fira Code', monospace;
+      font-size: 11px;
+    }
+    .log-entry { margin: 4px 0; }
+    .log-entry.info { color: #4fc3f7; }
+    .log-entry.success { color: #4caf50; }
+    .log-entry.error { color: #f44336; }
+    .log-entry.warn { color: #ff9800; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🚀 FluxGPU Worker Mode Demo <span class="badge">host-browser</span></h1>
+    <p>Demonstrating @fluxgpu/host-browser with Web Workers and SharedArrayBuffer</p>
+  </div>
+  
+  <div class="main">
+    <div class="canvas-container">
+      <canvas id="gpuCanvas"></canvas>
+      <div class="overlay">
+        <div class="stat"><span>FPS:</span><span id="fps">0</span></div>
+        <div class="stat"><span>Frame:</span><span id="frameCount">0</span></div>
+        <div class="stat"><span>GPU Time:</span><span id="gpuTime">0ms</span></div>
+        <div class="stat"><span>Workers:</span><span id="workerCount">0</span></div>
+        <div class="stat"><span>Mode:</span><span id="mode">Initializing...</span></div>
+      </div>
+    </div>
+    
+    <div class="sidebar">
+      <div class="section">
+        <h3>Feature Detection</h3>
+        <div class="feature-list" id="featureList">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+      
+      <div class="section">
+        <h3>Active Packages</h3>
+        <div class="packages">
+          <div class="package highlight">@fluxgpu/host-browser</div>
+          <div class="package active">@fluxgpu/contracts</div>
+          <div class="package active">@fluxgpu/protocol</div>
+          <div class="package active">@fluxgpu/engine</div>
+          <div class="package active">@fluxgpu/dsl</div>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h3>Architecture</h3>
+        <div class="architecture">┌─────────────────────────────┐
+│      Main Thread            │
+│  ┌───────────────────────┐  │
+│  │   host-browser        │  │
+│  │  - WorkerHost         │  │
+│  │  - AnimationLoop      │  │
+│  │  - EventHandler       │  │
+│  └───────────┬───────────┘  │
+└──────────────┼──────────────┘
+               │ postMessage
+               │ (protocol)
+┌──────────────┼──────────────┐
+│      GPU Worker Thread      │
+│  ┌───────────┴───────────┐  │
+│  │   WorkerExecutor      │  │
+│  │  - OffscreenCanvas    │  │
+│  │  - WebGPU Device      │  │
+│  │  - Compute + Render   │  │
+│  └───────────────────────┘  │
+└─────────────────────────────┘</div>
+      </div>
+      
+      <div class="section">
+        <h3>Controls</h3>
+        <div class="control">
+          <label>Attraction: <span id="attractionVal">0.5</span></label>
+          <input type="range" id="attraction" min="0" max="2" step="0.1" value="0.5" style="width:100%">
+        </div>
+        <div class="control" style="margin-top:10px">
+          <label>Damping: <span id="dampingVal">0.98</span></label>
+          <input type="range" id="damping" min="0.9" max="1" step="0.01" value="0.98" style="width:100%">
+        </div>
+      </div>
+      
+      <div class="section">
+        <h3>Status</h3>
+        <div id="status" class="status-box info">Checking features...</div>
+      </div>
+      
+      <div class="section">
+        <h3>Log</h3>
+        <div id="logContainer" class="log-container"></div>
+      </div>
+    </div>
+  </div>
+  
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

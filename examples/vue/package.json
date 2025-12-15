@@ -1,6 +1,6 @@
 {
   "name": "@fluxgpu/example-vue",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "FluxGPU Vue Demo",
   "type": "module",
@@ -10,8 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fluxgpu/contracts": "workspace:*",
     "@fluxgpu/dsl": "workspace:*",
     "@fluxgpu/engine": "workspace:*",
+    "@fluxgpu/host-browser": "workspace:*",
     "@fluxgpu/vue": "workspace:*",
     "vue": "^3.4.0"
   },

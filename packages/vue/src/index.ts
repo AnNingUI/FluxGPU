@@ -1,8 +1,13 @@
 /**
  * @fluxgpu/vue - Vue bindings for FluxGPU
- * 
- * Provides composables and components for easy WebGPU integration in Vue apps.
+ *
+ * 基于 IGPUAdapter 的六边形架构
  */
 
 export * from './composables.js';
 export * from './components.js';
+
+// Re-export types from contracts and engine
+export type { IGPUAdapter, ICommandEncoder, IBuffer, ITexture } from '@fluxgpu/contracts';
+export { AdapterExecutor } from '@fluxgpu/engine';
+export { BrowserGPUAdapter } from '@fluxgpu/host-browser';

@@ -1,6 +1,6 @@
 {
   "name": "@fluxgpu/vue",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "description": "Vue 3 composables and components for FluxGPU - Composition API integration",
   "author": "AnNingUI",
   "license": "MIT",
@@ -39,9 +39,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@fluxgpu/dsl": "workspace:*",
+    "@fluxgpu/contracts": "workspace:*",
     "@fluxgpu/engine": "workspace:*",
-    "@webgpu/types": "^0.1.40"
+    "@fluxgpu/host-browser": "workspace:*"
   },
   "peerDependencies": {
     "vue": "^3.3.0"

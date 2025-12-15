@@ -1,5 +1,4 @@
-// @fluxgpu/engine - WebGPU executor
-// Depends on @fluxgpu/contracts and @fluxgpu/protocol
-export * from './executor.js';
-export * from './resource-table.js';
-export * from './gpu-context.js';
+// @fluxgpu/engine - GPU 执行器
+// 基于 IGPUAdapter 接口，与具体环境解耦
+
+export * from './adapter-executor.js';

@@ -1,13 +1,14 @@
 /**
  * Preact Components for FluxGPU
+ *
+ * 基于 IGPUAdapter 的六边形架构
  */
-
-/// <reference types="@webgpu/types" />
 
 import { useRef, useEffect } from 'preact/hooks';
 import type { ComponentChildren, JSX } from 'preact';
-import { GPUContext } from '@fluxgpu/engine';
-import { useGPUContext, useGPUFrame } from './hooks.js';
+import type { ICommandEncoder } from '@fluxgpu/contracts';
+import { AdapterExecutor } from '@fluxgpu/engine';
+import { useGPU, useGPUFrame } from './hooks.js';
 
 // ============================================================================
 // GPUCanvas - GPU Canvas 组件
@@ -18,9 +19,9 @@ export interface GPUCanvasProps {
   height?: number;
   devicePixelRatio?: boolean;
   autoStart?: boolean;
-  onReady?: (gpu: GPUContext) => void;
+  onReady?: (executor: AdapterExecutor) => void;
   onError?: (error: Error) => void;
-  onRender?: (encoder: GPUCommandEncoder, target: GPUTextureView, deltaTime: number) => void;
+  onRender?: (encoder: ICommandEncoder, deltaTime: number) => void;
   class?: string;
   style?: JSX.CSSProperties;
   children?: ComponentChildren;
@@ -39,7 +40,7 @@ export function GPUCanvas({
   children,
 }: GPUCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { gpu, error, isLoading } = useGPUContext(canvasRef);
+  const { executor, error, isLoading } = useGPU(canvasRef);
 
   // 设置 canvas 尺寸
   useEffect(() => {
@@ -53,8 +54,8 @@ export function GPUCanvas({
 
   // 回调
   useEffect(() => {
-    if (gpu) onReady?.(gpu);
-  }, [gpu, onReady]);
+    if (executor) onReady?.(executor);
+  }, [executor, onReady]);
 
   useEffect(() => {
     if (error) onError?.(error);
@@ -66,48 +67,49 @@ export function GPUCanvas({
 
   // 渲染循环
   useGPUFrame(
-    gpu,
-    (encoder, target, deltaTime) => {
-      onRenderRef.current?.(encoder, target, deltaTime);
+    executor,
+    (encoder, deltaTime) => {
+      onRenderRef.current?.(encoder, deltaTime);
     },
     autoStart
   );
 
   return (
     <div class={className} style={{ position: 'relative', width, height, ...style }}>
-      <canvas
-        ref={canvasRef}
-        style={{ width: '100%', height: '100%', display: 'block' }}
-      />
-      
+      <canvas ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block' }} />
+
       {isLoading && (
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'rgba(0,0,0,0.5)',
-          color: 'white',
-        }}>
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(0,0,0,0.5)',
+            color: 'white',
+          }}
+        >
           Loading WebGPU...
         </div>
       )}
-      
+
       {error && (
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'rgba(255,0,0,0.2)',
-          color: 'red',
-        }}>
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(255,0,0,0.2)',
+            color: 'red',
+          }}
+        >
           {error.message}
         </div>
       )}
-      
+
       {children}
     </div>
   );
@@ -118,12 +120,12 @@ export function GPUCanvas({
 // ============================================================================
 
 export interface GPUStatsProps {
-  gpu?: GPUContext | null;
+  executor?: AdapterExecutor | null;
   position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
   style?: JSX.CSSProperties;
 }
 
-export function GPUStats({ gpu, position = 'top-right', style }: GPUStatsProps) {
+export function GPUStats({ executor, position = 'top-right', style }: GPUStatsProps) {
   const positionStyle: JSX.CSSProperties = {
     position: 'absolute',
     padding: '8px 12px',
@@ -139,8 +141,8 @@ export function GPUStats({ gpu, position = 'top-right', style }: GPUStatsProps) 
 
   return (
     <div style={positionStyle}>
-      <div>GPU: {gpu ? 'Ready' : 'N/A'}</div>
-      {gpu && <div>Format: {gpu.format}</div>}
+      <div>GPU: {executor ? 'Ready' : 'N/A'}</div>
+      {executor && <div>Format: {executor.getPreferredFormat()}</div>}
     </div>
   );
 }

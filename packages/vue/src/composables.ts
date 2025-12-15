@@ -1,12 +1,13 @@
 /**
  * Vue Composables for FluxGPU
+ *
+ * 基于 IGPUAdapter 的六边形架构
  */
 
-/// <reference types="@webgpu/types" />
-
 import { ref, shallowRef, onMounted, onUnmounted, watch, type Ref, type ShallowRef } from 'vue';
-import type { StructType } from '@fluxgpu/dsl';
-import { GPUContext, ComputePass, RenderPass, UniformBuffer } from '@fluxgpu/engine';
+import type { IGPUAdapter, ICommandEncoder } from '@fluxgpu/contracts';
+import { AdapterExecutor } from '@fluxgpu/engine';
+import { BrowserGPUAdapter } from '@fluxgpu/host-browser';
 
 // ============================================================================
 // useGPU - 主要的 GPU 初始化 composable
@@ -17,128 +18,82 @@ export interface UseGPUOptions {
 }
 
 export interface UseGPUReturn {
-  gpu: ShallowRef<GPUContext | null>;
+  adapter: ShallowRef<IGPUAdapter | null>;
+  executor: ShallowRef<AdapterExecutor | null>;
   error: Ref<Error | null>;
   isLoading: Ref<boolean>;
 }
 
-export function useGPU(
-  canvasRef: Ref<HTMLCanvasElement | null>,
-  options: UseGPUOptions = {}
-): UseGPUReturn {
-  const gpu = shallowRef<GPUContext | null>(null);
+/**
+ * 初始化 GPU 适配器和执行器
+ *
+ * @example
+ * const canvasRef = ref<HTMLCanvasElement | null>(null);
+ * const { adapter, executor, isLoading, error } = useGPU(canvasRef);
+ */
+export function useGPU(canvasRef: Ref<HTMLCanvasElement | null>, options: UseGPUOptions = {}): UseGPUReturn {
+  const adapter = shallowRef<IGPUAdapter | null>(null);
+  const executor = shallowRef<AdapterExecutor | null>(null);
   const error = ref<Error | null>(null);
   const isLoading = ref(true);
 
-  watch(canvasRef, async (canvas) => {
-    if (!canvas) return;
+  watch(
+    canvasRef,
+    async (canvas) => {
+      if (!canvas) return;
 
-    try {
-      isLoading.value = true;
-      gpu.value = await GPUContext.create({
-        canvas,
-        powerPreference: options.powerPreference,
-      });
-      error.value = null;
-    } catch (err) {
-      error.value = err instanceof Error ? err : new Error(String(err));
-      gpu.value = null;
-    } finally {
-      isLoading.value = false;
+      try {
+        isLoading.value = true;
+
+        const browserAdapter = new BrowserGPUAdapter({
+          canvas,
+          powerPreference: options.powerPreference,
+        });
+
+        const adapterExecutor = new AdapterExecutor({ adapter: browserAdapter });
+        await adapterExecutor.initialize();
+
+        adapter.value = browserAdapter;
+        executor.value = adapterExecutor;
+        error.value = null;
+      } catch (err) {
+        error.value = err instanceof Error ? err : new Error(String(err));
+        adapter.value = null;
+        executor.value = null;
+      } finally {
+        isLoading.value = false;
+      }
+    },
+    { immediate: true }
+  );
+
+  onUnmounted(() => {
+    if (executor.value) {
+      executor.value.dispose();
     }
-  }, { immediate: true });
+  });
 
-  return { gpu, error, isLoading };
+  return { adapter, executor, error, isLoading };
 }
 
 // ============================================================================
-// useComputePass - 计算管线 composable
+// useGPUFrame - GPU 帧渲染 composable
 // ============================================================================
 
-export function useComputePass(
-  gpu: ShallowRef<GPUContext | null>,
-  shaderCode: Ref<string> | string,
-  workgroupSize: [number, number?, number?] = [256]
-): ShallowRef<ComputePass | null> {
-  const pass = shallowRef<ComputePass | null>(null);
-  const code = typeof shaderCode === 'string' ? ref(shaderCode) : shaderCode;
-
-  watch([gpu, code], ([g, c]) => {
-    if (g && c) {
-      pass.value = g.createComputePass(c, workgroupSize);
-    } else {
-      pass.value = null;
-    }
-  }, { immediate: true });
-
-  return pass;
-}
-
-// ============================================================================
-// useRenderPass - 渲染管线 composable
-// ============================================================================
-
-export interface UseRenderPassOptions {
-  topology?: GPUPrimitiveTopology;
-  blend?: GPUBlendState;
-}
-
-export function useRenderPass(
-  gpu: ShallowRef<GPUContext | null>,
-  vertexShader: Ref<string> | string,
-  fragmentShader: Ref<string> | string,
-  options: UseRenderPassOptions = {}
-): ShallowRef<RenderPass | null> {
-  const pass = shallowRef<RenderPass | null>(null);
-  const vertex = typeof vertexShader === 'string' ? ref(vertexShader) : vertexShader;
-  const fragment = typeof fragmentShader === 'string' ? ref(fragmentShader) : fragmentShader;
-
-  watch([gpu, vertex, fragment], ([g, v, f]) => {
-    if (g && v && f) {
-      pass.value = g.createRenderPass(v, f, options);
-    } else {
-      pass.value = null;
-    }
-  }, { immediate: true });
-
-  return pass;
-}
-
-// ============================================================================
-// useUniformBuffer - Uniform buffer composable
-// ============================================================================
-
-export function useUniformBuffer<T extends StructType>(
-  gpu: ShallowRef<GPUContext | null>,
-  structType: T
-): ShallowRef<UniformBuffer<T> | null> {
-  const buffer = shallowRef<UniformBuffer<T> | null>(null);
-
-  watch(gpu, (g) => {
-    if (g) {
-      buffer.value = g.createUniformBuffer(structType);
-    } else {
-      buffer.value = null;
-    }
-  }, { immediate: true });
-
-  return buffer;
-}
-
-// ============================================================================
-// useAnimationFrame - 动画循环 composable
-// ============================================================================
-
-export interface UseAnimationFrameReturn {
+export interface UseGPUFrameReturn {
   start: () => void;
   stop: () => void;
   isRunning: Ref<boolean>;
 }
 
-export function useAnimationFrame(
-  callback: (deltaTime: number, time: number) => void,
+/**
+ * GPU 帧渲染循环
+ */
+export function useGPUFrame(
+  executor: ShallowRef<AdapterExecutor | null>,
+  render: (encoder: ICommandEncoder, deltaTime: number) => void,
   autoStart = true
-): UseAnimationFrameReturn {
+): UseGPUFrameReturn {
   const isRunning = ref(false);
   let frameId = 0;
   let lastTime = 0;
@@ -146,9 +101,65 @@ export function useAnimationFrame(
   const animate = (time: number) => {
     const deltaTime = lastTime ? time - lastTime : 0;
     lastTime = time;
-    
+
+    const e = executor.value;
+    if (e) {
+      e.frame((encoder) => {
+        render(encoder, deltaTime);
+      });
+    }
+
+    if (isRunning.value) {
+      frameId = requestAnimationFrame(animate);
+    }
+  };
+
+  const start = () => {
+    if (!isRunning.value) {
+      isRunning.value = true;
+      lastTime = 0;
+      frameId = requestAnimationFrame(animate);
+    }
+  };
+
+  const stop = () => {
+    isRunning.value = false;
+    cancelAnimationFrame(frameId);
+  };
+
+  watch(
+    executor,
+    (e) => {
+      if (e && autoStart) {
+        start();
+      }
+    },
+    { immediate: true }
+  );
+
+  onUnmounted(stop);
+
+  return { start, stop, isRunning };
+}
+
+// ============================================================================
+// useAnimationFrame - 通用动画循环 composable
+// ============================================================================
+
+export function useAnimationFrame(
+  callback: (deltaTime: number, time: number) => void,
+  autoStart = true
+): UseGPUFrameReturn {
+  const isRunning = ref(false);
+  let frameId = 0;
+  let lastTime = 0;
+
+  const animate = (time: number) => {
+    const deltaTime = lastTime ? time - lastTime : 0;
+    lastTime = time;
+
     callback(deltaTime, time / 1000);
-    
+
     if (isRunning.value) {
       frameId = requestAnimationFrame(animate);
     }
@@ -179,38 +190,12 @@ export function useAnimationFrame(
 }
 
 // ============================================================================
-// useGPUFrame - GPU 帧渲染 composable
-// ============================================================================
-
-export function useGPUFrame(
-  gpu: ShallowRef<GPUContext | null>,
-  render: (encoder: GPUCommandEncoder, target: GPUTextureView, deltaTime: number) => void,
-  autoStart = true
-): UseAnimationFrameReturn {
-  const { start, stop, isRunning } = useAnimationFrame((deltaTime) => {
-    const g = gpu.value;
-    if (g) {
-      g.frame((encoder, target) => {
-        render(encoder, target, deltaTime);
-      });
-    }
-  });
-
-  watch(gpu, (g) => {
-    if (g && autoStart) {
-      start();
-    }
-  }, { immediate: true });
-
-  onUnmounted(stop);
-
-  return { start, stop, isRunning };
-}
-
-// ============================================================================
 // useMouse - 鼠标位置 composable
 // ============================================================================
 
+/**
+ * 获取归一化的鼠标位置 (-1 到 1)
+ */
 export function useMouse(canvasRef: Ref<HTMLCanvasElement | null>) {
   const pos = ref({ x: 0, y: 0 });
 
@@ -225,12 +210,16 @@ export function useMouse(canvasRef: Ref<HTMLCanvasElement | null>) {
     };
   };
 
-  watch(canvasRef, (canvas, _, onCleanup) => {
-    if (canvas) {
-      canvas.addEventListener('mousemove', handleMove);
-      onCleanup(() => canvas.removeEventListener('mousemove', handleMove));
-    }
-  }, { immediate: true });
+  watch(
+    canvasRef,
+    (canvas, _, onCleanup) => {
+      if (canvas) {
+        canvas.addEventListener('mousemove', handleMove);
+        onCleanup(() => canvas.removeEventListener('mousemove', handleMove));
+      }
+    },
+    { immediate: true }
+  );
 
   return pos;
 }

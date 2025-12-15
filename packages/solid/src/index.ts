@@ -1,8 +1,13 @@
 /**
  * @fluxgpu/solid - SolidJS bindings for FluxGPU
- * 
- * Provides primitives and components for easy WebGPU integration in SolidJS apps.
+ *
+ * 基于 IGPUAdapter 的六边形架构
  */
 
 export * from './primitives.js';
-export * from './components.jsx';
+export * from './components.js';
+
+// Re-export types from contracts and engine
+export type { IGPUAdapter, ICommandEncoder, IBuffer, ITexture } from '@fluxgpu/contracts';
+export { AdapterExecutor } from '@fluxgpu/engine';
+export { BrowserGPUAdapter } from '@fluxgpu/host-browser';

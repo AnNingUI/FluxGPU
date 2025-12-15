@@ -1,11 +1,12 @@
 /**
  * SolidJS Components for FluxGPU
+ *
+ * 基于 IGPUAdapter 的六边形架构
  */
 
-/// <reference types="@webgpu/types" />
-
 import { createSignal, createEffect, onMount, Show, type JSX, type ParentProps } from 'solid-js';
-import { GPUContext } from '@fluxgpu/engine';
+import type { ICommandEncoder } from '@fluxgpu/contracts';
+import { AdapterExecutor } from '@fluxgpu/engine';
 import { createGPU, createGPUFrame } from './primitives.js';
 
 // ============================================================================
@@ -17,9 +18,9 @@ export interface GPUCanvasProps {
   height?: number;
   devicePixelRatio?: boolean;
   autoStart?: boolean;
-  onReady?: (gpu: GPUContext) => void;
+  onReady?: (executor: AdapterExecutor) => void;
   onError?: (error: Error) => void;
-  onRender?: (encoder: GPUCommandEncoder, target: GPUTextureView, deltaTime: number) => void;
+  onRender?: (encoder: ICommandEncoder, deltaTime: number) => void;
   class?: string;
   style?: JSX.CSSProperties;
   ref?: (el: GPUCanvasRef) => void;
@@ -27,7 +28,7 @@ export interface GPUCanvasProps {
 
 export interface GPUCanvasRef {
   canvas: HTMLCanvasElement | null;
-  gpu: GPUContext | null;
+  executor: AdapterExecutor | null;
   start: () => void;
   stop: () => void;
 }
@@ -35,8 +36,8 @@ export interface GPUCanvasRef {
 export function GPUCanvas(props: ParentProps<GPUCanvasProps>) {
   let canvasEl: HTMLCanvasElement | undefined;
   const [canvas, setCanvas] = createSignal<HTMLCanvasElement | null>(null);
-  
-  const { gpu, error, isLoading } = createGPU(canvas);
+
+  const { executor, error, isLoading } = createGPU(canvas);
 
   // 设置 canvas 尺寸
   createEffect(() => {
@@ -50,8 +51,8 @@ export function GPUCanvas(props: ParentProps<GPUCanvasProps>) {
 
   // 回调
   createEffect(() => {
-    const g = gpu();
-    if (g) props.onReady?.(g);
+    const e = executor();
+    if (e) props.onReady?.(e);
   });
 
   createEffect(() => {
@@ -59,11 +60,11 @@ export function GPUCanvas(props: ParentProps<GPUCanvasProps>) {
     if (e) props.onError?.(e);
   });
 
-  // 渲染循环 - 直接访问 props.onRender 以保持响应式
+  // 渲染循环
   const { start, stop } = createGPUFrame(
-    gpu,
-    (encoder, target, deltaTime) => {
-      props.onRender?.(encoder, target, deltaTime);
+    executor,
+    (encoder, deltaTime) => {
+      props.onRender?.(encoder, deltaTime);
     },
     props.autoStart !== false
   );
@@ -73,7 +74,7 @@ export function GPUCanvas(props: ParentProps<GPUCanvasProps>) {
     setCanvas(canvasEl ?? null);
     props.ref?.({
       canvas: canvasEl ?? null,
-      gpu: gpu(),
+      executor: executor(),
       start,
       stop,
     });
@@ -89,39 +90,40 @@ export function GPUCanvas(props: ParentProps<GPUCanvasProps>) {
         ...props.style,
       }}
     >
-      <canvas
-        ref={canvasEl}
-        style={{ width: '100%', height: '100%', display: 'block' }}
-      />
-      
+      <canvas ref={canvasEl} style={{ width: '100%', height: '100%', display: 'block' }} />
+
       <Show when={isLoading()}>
-        <div style={{
-          position: 'absolute',
-          inset: '0',
-          display: 'flex',
-          'align-items': 'center',
-          'justify-content': 'center',
-          background: 'rgba(0,0,0,0.5)',
-          color: 'white',
-        }}>
+        <div
+          style={{
+            position: 'absolute',
+            inset: '0',
+            display: 'flex',
+            'align-items': 'center',
+            'justify-content': 'center',
+            background: 'rgba(0,0,0,0.5)',
+            color: 'white',
+          }}
+        >
           Loading WebGPU...
         </div>
       </Show>
-      
+
       <Show when={error()}>
-        <div style={{
-          position: 'absolute',
-          inset: '0',
-          display: 'flex',
-          'align-items': 'center',
-          'justify-content': 'center',
-          background: 'rgba(255,0,0,0.2)',
-          color: 'red',
-        }}>
+        <div
+          style={{
+            position: 'absolute',
+            inset: '0',
+            display: 'flex',
+            'align-items': 'center',
+            'justify-content': 'center',
+            background: 'rgba(255,0,0,0.2)',
+            color: 'red',
+          }}
+        >
           {error()?.message}
         </div>
       </Show>
-      
+
       {props.children}
     </div>
   );
@@ -132,7 +134,7 @@ export function GPUCanvas(props: ParentProps<GPUCanvasProps>) {
 // ============================================================================
 
 export interface GPUStatsProps {
-  gpu?: GPUContext | null;
+  executor?: AdapterExecutor | null;
   position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
   style?: JSX.CSSProperties;
 }
@@ -158,21 +160,23 @@ export function GPUStats(props: GPUStatsProps) {
   const position = () => props.position ?? 'top-right';
 
   return (
-    <div style={{
-      position: 'absolute',
-      padding: '8px 12px',
-      background: 'rgba(0,0,0,0.7)',
-      color: 'white',
-      'font-family': 'monospace',
-      'font-size': '12px',
-      'border-radius': '4px',
-      ...(position().includes('top') ? { top: '8px' } : { bottom: '8px' }),
-      ...(position().includes('right') ? { right: '8px' } : { left: '8px' }),
-      ...props.style,
-    }}>
+    <div
+      style={{
+        position: 'absolute',
+        padding: '8px 12px',
+        background: 'rgba(0,0,0,0.7)',
+        color: 'white',
+        'font-family': 'monospace',
+        'font-size': '12px',
+        'border-radius': '4px',
+        ...(position().includes('top') ? { top: '8px' } : { bottom: '8px' }),
+        ...(position().includes('right') ? { right: '8px' } : { left: '8px' }),
+        ...props.style,
+      }}
+    >
       <div>FPS: {fps()}</div>
-      <Show when={props.gpu}>
-        <div>Format: {props.gpu?.format}</div>
+      <Show when={props.executor}>
+        <div>Format: {props.executor?.getPreferredFormat()}</div>
       </Show>
     </div>
   );

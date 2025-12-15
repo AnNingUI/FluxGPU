@@ -18,8 +18,6 @@ export const DEPENDENCIES_COUNT_OFFSET = 16;
 export const DEPENDENCIES_OFFSET = 20;
 
 // RingBuffer constants
-const READ_INDEX_OFFSET = 0;
-const WRITE_INDEX_OFFSET = 4;
 const BUFFER_START_OFFSET = 8;
 
 /**
@@ -256,7 +254,6 @@ export class RingBuffer {
     }
     
     // Write length prefix
-    const lengthView = new DataView(this.dataBuffer.buffer, this.dataBuffer.byteOffset);
     const lengthPos = writeIndex % this.capacity;
     
     // Handle wrap-around for length

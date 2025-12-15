@@ -109,12 +109,24 @@ const computeShader = shader()
 
 ```bash
 # Run examples
-pnpm --filter "@fluxgpu/example-vanilla" dev   # http://localhost:8000
-pnpm --filter "@fluxgpu/example-react" dev     # http://localhost:8001
-pnpm --filter "@fluxgpu/example-vue" dev       # http://localhost:8002
-pnpm --filter "@fluxgpu/example-solid" dev     # http://localhost:8003
-pnpm --filter "@fluxgpu/example-preact" dev    # http://localhost:8004
+pnpm --filter "@fluxgpu/example-vanilla" dev         # http://localhost:8000
+pnpm --filter "@fluxgpu/example-react" dev           # http://localhost:8001
+pnpm --filter "@fluxgpu/example-vue" dev             # http://localhost:8002
+pnpm --filter "@fluxgpu/example-solid" dev           # http://localhost:8003
+pnpm --filter "@fluxgpu/example-preact" dev          # http://localhost:8004
+pnpm --filter "@fluxgpu/example-vanilla-worker" dev  # http://localhost:8005 (host-browser)
 ```
+
+### Example Descriptions
+
+| Example | Description |
+|---------|-------------|
+| vanilla | Basic TypeScript with GPUContext (direct mode) |
+| vanilla-worker | Using @fluxgpu/host-browser APIs (Worker mode ready) |
+| react | React hooks and components |
+| vue | Vue composables and components |
+| solid | SolidJS primitives and components |
+| preact | Preact hooks and components |
 
 ## Development
 

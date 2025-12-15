@@ -10,7 +10,8 @@
   },
   "include": ["src/**/*"],
   "references": [
-    { "path": "../dsl" },
-    { "path": "../engine" }
+    { "path": "../contracts" },
+    { "path": "../engine" },
+    { "path": "../host-browser" }
   ]
 }

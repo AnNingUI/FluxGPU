@@ -1,13 +1,14 @@
 /**
  * React Components for FluxGPU
+ *
+ * 基于 IGPUAdapter 的六边形架构
  */
 
-/// <reference types="@webgpu/types" />
-
 import { useRef, useEffect, forwardRef, useImperativeHandle, type ReactNode } from 'react';
-import { GPUContext } from '@fluxgpu/engine';
+import type { ICommandEncoder } from '@fluxgpu/contracts';
+import { AdapterExecutor } from '@fluxgpu/engine';
 import { FluxProvider, useFluxContext } from './context.js';
-import { useGPUContext, useGPUFrame } from './hooks.js';
+import { useGPU, useGPUFrame } from './hooks.js';
 
 // ============================================================================
 // GPUCanvas - 自包含的 GPU Canvas 组件
@@ -21,9 +22,9 @@ export interface GPUCanvasProps {
   /** 使用设备像素比 */
   devicePixelRatio?: boolean;
   /** 渲染回调 */
-  onRender?: (encoder: GPUCommandEncoder, target: GPUTextureView, deltaTime: number) => void;
+  onRender?: (encoder: ICommandEncoder, deltaTime: number) => void;
   /** GPU 就绪回调 */
-  onReady?: (gpu: GPUContext) => void;
+  onReady?: (executor: AdapterExecutor) => void;
   /** 错误回调 */
   onError?: (error: Error) => void;
   /** 自动开始渲染 */
@@ -38,7 +39,7 @@ export interface GPUCanvasProps {
 
 export interface GPUCanvasRef {
   canvas: HTMLCanvasElement | null;
-  gpu: GPUContext | null;
+  executor: AdapterExecutor | null;
   start: () => void;
   stop: () => void;
 }
@@ -59,7 +60,7 @@ export const GPUCanvas = forwardRef<GPUCanvasRef, GPUCanvasProps>(function GPUCa
   ref
 ) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { gpu, error, isLoading } = useGPUContext(canvasRef);
+  const { executor, error, isLoading } = useGPU(canvasRef);
 
   // 设置 canvas 尺寸
   useEffect(() => {
@@ -73,8 +74,8 @@ export const GPUCanvas = forwardRef<GPUCanvasRef, GPUCanvasProps>(function GPUCa
 
   // 回调
   useEffect(() => {
-    if (gpu) onReady?.(gpu);
-  }, [gpu, onReady]);
+    if (executor) onReady?.(executor);
+  }, [executor, onReady]);
 
   useEffect(() => {
     if (error) onError?.(error);
@@ -86,50 +87,55 @@ export const GPUCanvas = forwardRef<GPUCanvasRef, GPUCanvasProps>(function GPUCa
 
   // 渲染循环
   useGPUFrame(
-    gpu,
-    (encoder, target, deltaTime) => {
-      onRenderRef.current?.(encoder, target, deltaTime);
+    executor,
+    (encoder, deltaTime) => {
+      onRenderRef.current?.(encoder, deltaTime);
     },
     autoStart
   );
 
   // 暴露 ref
-  useImperativeHandle(ref, () => ({
-    canvas: canvasRef.current,
-    gpu,
-    start: () => {},
-    stop: () => {},
-  }), [gpu]);
+  useImperativeHandle(
+    ref,
+    () => ({
+      canvas: canvasRef.current,
+      executor,
+      start: () => {},
+      stop: () => {},
+    }),
+    [executor]
+  );
 
   return (
     <div className={className} style={{ position: 'relative', width, height, ...style }}>
-      <canvas
-        ref={canvasRef}
-        style={{ width: '100%', height: '100%', display: 'block' }}
-      />
+      <canvas ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block' }} />
       {isLoading && (
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'rgba(0,0,0,0.5)',
-          color: 'white',
-        }}>
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(0,0,0,0.5)',
+            color: 'white',
+          }}
+        >
           Loading WebGPU...
         </div>
       )}
       {error && (
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'rgba(255,0,0,0.2)',
-          color: 'red',
-        }}>
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(255,0,0,0.2)',
+            color: 'red',
+          }}
+        >
           {error.message}
         </div>
       )}
@@ -143,7 +149,7 @@ export const GPUCanvas = forwardRef<GPUCanvasRef, GPUCanvasProps>(function GPUCa
 // ============================================================================
 
 export interface FluxCanvasProps extends Omit<GPUCanvasProps, 'onReady' | 'onError'> {
-  /** 子组件可以使用 useGPU hook */
+  /** 子组件可以使用 useFluxExecutor hook */
   children?: ReactNode;
 }
 
@@ -171,8 +177,8 @@ export interface GPUStatsProps {
 }
 
 export function GPUStats({ position = 'top-right', style }: GPUStatsProps) {
-  const { gpu, isLoading } = useFluxContext();
-  
+  const { executor, isLoading } = useFluxContext();
+
   const positionStyle: React.CSSProperties = {
     position: 'absolute',
     padding: '8px 12px',
@@ -190,14 +196,14 @@ export function GPUStats({ position = 'top-right', style }: GPUStatsProps) {
     return <div style={positionStyle}>Loading...</div>;
   }
 
-  if (!gpu) {
+  if (!executor) {
     return <div style={positionStyle}>No GPU</div>;
   }
 
   return (
     <div style={positionStyle}>
       <div>GPU: Ready</div>
-      <div>Format: {gpu.format}</div>
+      <div>Format: {executor.getPreferredFormat()}</div>
     </div>
   );
 }

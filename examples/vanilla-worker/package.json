@@ -1,11 +1,11 @@
 {
-  "name": "@fluxgpu/example-vanilla",
+  "name": "@fluxgpu/example-vanilla-worker",
   "version": "1.1.0",
   "private": true,
-  "description": "FluxGPU Vanilla TypeScript Demo",
+  "description": "FluxGPU Vanilla TypeScript Demo with Worker Mode (host-browser)",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 8005",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -14,7 +14,8 @@
     "@fluxgpu/core": "workspace:*",
     "@fluxgpu/dsl": "workspace:*",
     "@fluxgpu/engine": "workspace:*",
-    "@fluxgpu/host-browser": "workspace:*"
+    "@fluxgpu/host-browser": "workspace:*",
+    "@fluxgpu/protocol": "workspace:*"
   },
   "devDependencies": {
     "@webgpu/types": "^0.1.67",

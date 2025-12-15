@@ -17,12 +17,18 @@ importers:
 
   examples/preact:
     dependencies:
+      '@fluxgpu/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
       '@fluxgpu/dsl':
         specifier: workspace:*
         version: link:../../packages/dsl
       '@fluxgpu/engine':
         specifier: workspace:*
         version: link:../../packages/engine
+      '@fluxgpu/host-browser':
+        specifier: workspace:*
+        version: link:../../packages/host-browser
       '@fluxgpu/preact':
         specifier: workspace:*
         version: link:../../packages/preact
@@ -45,12 +51,18 @@ importers:
 
   examples/react:
     dependencies:
+      '@fluxgpu/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
       '@fluxgpu/dsl':
         specifier: workspace:*
         version: link:../../packages/dsl
       '@fluxgpu/engine':
         specifier: workspace:*
         version: link:../../packages/engine
+      '@fluxgpu/host-browser':
+        specifier: workspace:*
+        version: link:../../packages/host-browser
       '@fluxgpu/react':
         specifier: workspace:*
         version: link:../../packages/react
@@ -82,12 +94,18 @@ importers:
 
   examples/solid:
     dependencies:
+      '@fluxgpu/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
       '@fluxgpu/dsl':
         specifier: workspace:*
         version: link:../../packages/dsl
       '@fluxgpu/engine':
         specifier: workspace:*
         version: link:../../packages/engine
+      '@fluxgpu/host-browser':
+        specifier: workspace:*
+        version: link:../../packages/host-browser
       '@fluxgpu/solid':
         specifier: workspace:*
         version: link:../../packages/solid
@@ -125,6 +143,34 @@ importers:
       '@fluxgpu/host-browser':
         specifier: workspace:*
         version: link:../../packages/host-browser
+    devDependencies:
+      '@webgpu/types':
+        specifier: ^0.1.67
+        version: 0.1.67
+      typescript:
+        specifier: ^5.3.3
+        version: 5.9.3
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.25)
+
+  examples/vanilla-worker:
+    dependencies:
+      '@fluxgpu/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@fluxgpu/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@fluxgpu/dsl':
+        specifier: workspace:*
+        version: link:../../packages/dsl
+      '@fluxgpu/engine':
+        specifier: workspace:*
+        version: link:../../packages/engine
+      '@fluxgpu/host-browser':
+        specifier: workspace:*
+        version: link:../../packages/host-browser
       '@fluxgpu/protocol':
         specifier: workspace:*
         version: link:../../packages/protocol
@@ -141,12 +187,18 @@ importers:
 
   examples/vue:
     dependencies:
+      '@fluxgpu/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
       '@fluxgpu/dsl':
         specifier: workspace:*
         version: link:../../packages/dsl
       '@fluxgpu/engine':
         specifier: workspace:*
         version: link:../../packages/engine
+      '@fluxgpu/host-browser':
+        specifier: workspace:*
+        version: link:../../packages/host-browser
       '@fluxgpu/vue':
         specifier: workspace:*
         version: link:../../packages/vue
@@ -223,15 +275,6 @@ importers:
       '@fluxgpu/contracts':
         specifier: workspace:*
         version: link:../contracts
-      '@fluxgpu/dsl':
-        specifier: workspace:*
-        version: link:../dsl
-      '@fluxgpu/protocol':
-        specifier: workspace:*
-        version: link:../protocol
-      '@webgpu/types':
-        specifier: ^0.1.40
-        version: 0.1.67
     devDependencies:
       typescript:
         specifier: ^5.3.3
@@ -261,15 +304,15 @@ importers:
 
   packages/preact:
     dependencies:
-      '@fluxgpu/dsl':
+      '@fluxgpu/contracts':
         specifier: workspace:*
-        version: link:../dsl
+        version: link:../contracts
       '@fluxgpu/engine':
         specifier: workspace:*
         version: link:../engine
-      '@webgpu/types':
-        specifier: ^0.1.40
-        version: 0.1.67
+      '@fluxgpu/host-browser':
+        specifier: workspace:*
+        version: link:../host-browser
     devDependencies:
       preact:
         specifier: ^10.19.0
@@ -293,15 +336,15 @@ importers:
 
   packages/react:
     dependencies:
-      '@fluxgpu/dsl':
+      '@fluxgpu/contracts':
         specifier: workspace:*
-        version: link:../dsl
+        version: link:../contracts
       '@fluxgpu/engine':
         specifier: workspace:*
         version: link:../engine
-      '@webgpu/types':
-        specifier: ^0.1.40
-        version: 0.1.67
+      '@fluxgpu/host-browser':
+        specifier: workspace:*
+        version: link:../host-browser
     devDependencies:
       '@types/react':
         specifier: ^18.2.0
@@ -315,15 +358,15 @@ importers:
 
   packages/solid:
     dependencies:
-      '@fluxgpu/dsl':
+      '@fluxgpu/contracts':
         specifier: workspace:*
-        version: link:../dsl
+        version: link:../contracts
       '@fluxgpu/engine':
         specifier: workspace:*
         version: link:../engine
-      '@webgpu/types':
-        specifier: ^0.1.40
-        version: 0.1.67
+      '@fluxgpu/host-browser':
+        specifier: workspace:*
+        version: link:../host-browser
     devDependencies:
       solid-js:
         specifier: ^1.8.0
@@ -334,15 +377,15 @@ importers:
 
   packages/vue:
     dependencies:
-      '@fluxgpu/dsl':
+      '@fluxgpu/contracts':
         specifier: workspace:*
-        version: link:../dsl
+        version: link:../contracts
       '@fluxgpu/engine':
         specifier: workspace:*
         version: link:../engine
-      '@webgpu/types':
-        specifier: ^0.1.40
-        version: 0.1.67
+      '@fluxgpu/host-browser':
+        specifier: workspace:*
+        version: link:../host-browser
     devDependencies:
       typescript:
         specifier: ^5.3.3

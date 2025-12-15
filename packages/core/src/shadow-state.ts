@@ -1,13 +1,20 @@
 // Shadow State Management
 // Maintains proxy objects for remote GPU resources
-import type { ResourceId, ResourceType, IGPUResource } from '@fluxgpu/contracts';
+import type { ResourceId } from '@fluxgpu/contracts';
+
+// Resource type enum
+export enum ResourceType {
+  Buffer = 'buffer',
+  Texture = 'texture',
+  Sampler = 'sampler',
+}
 
 // Resource interface with metadata
 export interface Resource {
   id: ResourceId;
   type: ResourceType;
   size: number;
-  usage: number; // GPUBufferUsageFlags or GPUTextureUsageFlags
+  usage: number;
 }
 
 // Resource lifecycle state
@@ -42,7 +49,7 @@ export class ShadowStateManager {
   createResource(type: ResourceType, size: number, usage: number): Resource {
     const id = this.generateResourceId();
     const resource: Resource = { id, type, size, usage };
-    
+
     const metadata: ResourceMetadata = {
       resource,
       state: ResourceState.Created,
@@ -127,14 +134,14 @@ export class ShadowStateManager {
 
   // Get all resources
   getAllResources(): Resource[] {
-    return Array.from(this.resources.values()).map(m => m.resource);
+    return Array.from(this.resources.values()).map((m) => m.resource);
   }
 
   // Get resources by state
   getResourcesByState(state: ResourceState): Resource[] {
     return Array.from(this.resources.values())
-      .filter(m => m.state === state)
-      .map(m => m.resource);
+      .filter((m) => m.state === state)
+      .map((m) => m.resource);
   }
 
   // Clear all resources
@@ -147,22 +154,4 @@ export class ShadowStateManager {
     const id = `resource_${this.nextId++}`;
     return id as ResourceId;
   }
-}
-
-// Create a resource proxy that implements IGPUResource
-export function createResourceProxy(
-  manager: ShadowStateManager,
-  type: ResourceType,
-  size: number,
-  usage: number
-): IGPUResource {
-  const resource = manager.createResource(type, size, usage);
-
-  return {
-    id: resource.id,
-    type: resource.type,
-    dispose(): void {
-      manager.disposeResource(resource.id);
-    },
-  };
 }

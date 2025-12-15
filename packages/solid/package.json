@@ -1,6 +1,6 @@
 {
   "name": "@fluxgpu/solid",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "description": "SolidJS primitives and components for FluxGPU - reactive GPU programming",
   "author": "AnNingUI",
   "license": "MIT",
@@ -39,9 +39,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@fluxgpu/dsl": "workspace:*",
+    "@fluxgpu/contracts": "workspace:*",
     "@fluxgpu/engine": "workspace:*",
-    "@webgpu/types": "^0.1.40"
+    "@fluxgpu/host-browser": "workspace:*"
   },
   "peerDependencies": {
     "solid-js": "^1.8.0"

@@ -1,32 +1,39 @@
 /**
  * React Hooks for FluxGPU
+ *
+ * 基于 IGPUAdapter 的六边形架构
  */
 
-/// <reference types="@webgpu/types" />
-
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import type { StructType } from '@fluxgpu/dsl';
-import { GPUContext, ComputePass, RenderPass, UniformBuffer } from '@fluxgpu/engine';
+import { useState, useEffect, useRef } from 'react';
+import type { IGPUAdapter, ICommandEncoder } from '@fluxgpu/contracts';
+import { AdapterExecutor } from '@fluxgpu/engine';
+import { BrowserGPUAdapter } from '@fluxgpu/host-browser';
 
 // ============================================================================
-// useGPUContext - 独立初始化 hook
+// useGPU - 主要的 GPU 初始化 hook
 // ============================================================================
 
-export interface UseGPUContextOptions {
+export interface UseGPUOptions {
   powerPreference?: 'low-power' | 'high-performance';
 }
 
-export interface UseGPUContextResult {
-  gpu: GPUContext | null;
+export interface UseGPUResult {
+  adapter: IGPUAdapter | null;
+  executor: AdapterExecutor | null;
   error: Error | null;
   isLoading: boolean;
 }
 
-export function useGPUContext(
-  canvasRef: React.RefObject<HTMLCanvasElement>,
-  options: UseGPUContextOptions = {}
-): UseGPUContextResult {
-  const [gpu, setGpu] = useState<GPUContext | null>(null);
+/**
+ * 初始化 GPU 适配器和执行器
+ *
+ * @example
+ * const canvasRef = useRef<HTMLCanvasElement>(null);
+ * const { adapter, executor, isLoading, error } = useGPU(canvasRef);
+ */
+export function useGPU(canvasRef: React.RefObject<HTMLCanvasElement>, options: UseGPUOptions = {}): UseGPUResult {
+  const [adapter, setAdapter] = useState<IGPUAdapter | null>(null);
+  const [executor, setExecutor] = useState<AdapterExecutor | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -35,87 +42,97 @@ export function useGPUContext(
     if (!canvas) return;
 
     let mounted = true;
+    let currentExecutor: AdapterExecutor | null = null;
 
-    GPUContext.create({ canvas, powerPreference: options.powerPreference })
-      .then((ctx) => {
+    const init = async () => {
+      try {
+        const browserAdapter = new BrowserGPUAdapter({
+          canvas,
+          powerPreference: options.powerPreference,
+        });
+
+        currentExecutor = new AdapterExecutor({ adapter: browserAdapter });
+        await currentExecutor.initialize();
+
         if (mounted) {
-          setGpu(ctx);
+          setAdapter(browserAdapter);
+          setExecutor(currentExecutor);
           setIsLoading(false);
         }
-      })
-      .catch((err) => {
+      } catch (err) {
         if (mounted) {
           setError(err instanceof Error ? err : new Error(String(err)));
           setIsLoading(false);
         }
-      });
+      }
+    };
+
+    init();
 
     return () => {
       mounted = false;
+      if (currentExecutor) {
+        currentExecutor.dispose();
+      }
     };
   }, [canvasRef, options.powerPreference]);
 
-  return { gpu, error, isLoading };
+  return { adapter, executor, error, isLoading };
 }
 
 // ============================================================================
-// useComputePass - 计算管线 hook
+// useGPUFrame - GPU 帧渲染 hook
 // ============================================================================
 
-export function useComputePass(
-  gpu: GPUContext | null,
-  shaderCode: string,
-  workgroupSize: [number, number?, number?] = [256]
-): ComputePass | null {
-  return useMemo(() => {
-    if (!gpu) return null;
-    return gpu.createComputePass(shaderCode, workgroupSize);
-  }, [gpu, shaderCode, workgroupSize[0], workgroupSize[1], workgroupSize[2]]);
-}
-
-// ============================================================================
-// useRenderPass - 渲染管线 hook
-// ============================================================================
-
-export interface UseRenderPassOptions {
-  topology?: GPUPrimitiveTopology;
-  blend?: GPUBlendState;
-}
-
-export function useRenderPass(
-  gpu: GPUContext | null,
-  vertexShader: string,
-  fragmentShader: string,
-  options: UseRenderPassOptions = {}
-): RenderPass | null {
-  return useMemo(() => {
-    if (!gpu) return null;
-    return gpu.createRenderPass(vertexShader, fragmentShader, options);
-  }, [gpu, vertexShader, fragmentShader, options.topology]);
-}
-
-// ============================================================================
-// useUniformBuffer - Uniform buffer hook
-// ============================================================================
-
-export function useUniformBuffer<T extends StructType>(
-  gpu: GPUContext | null,
-  structType: T
-): UniformBuffer<T> | null {
-  return useMemo(() => {
-    if (!gpu) return null;
-    return gpu.createUniformBuffer(structType);
-  }, [gpu, structType]);
-}
-
-// ============================================================================
-// useAnimationFrame - 动画循环 hook (简化版)
-// ============================================================================
-
-export function useAnimationFrame(
-  callback: (deltaTime: number, time: number) => void,
+/**
+ * GPU 帧渲染循环
+ *
+ * @example
+ * useGPUFrame(executor, (encoder, deltaTime) => {
+ *   // 渲染逻辑
+ * });
+ */
+export function useGPUFrame(
+  executor: AdapterExecutor | null,
+  render: (encoder: ICommandEncoder, deltaTime: number) => void,
   active = true
 ): void {
+  const renderRef = useRef(render);
+  renderRef.current = render;
+
+  useEffect(() => {
+    if (!active || !executor) return;
+
+    let frameId: number;
+    let lastTime = 0;
+
+    const animate = (time: number) => {
+      const deltaTime = lastTime ? time - lastTime : 0;
+      lastTime = time;
+
+      executor.frame((encoder) => {
+        renderRef.current(encoder, deltaTime);
+      });
+
+      frameId = requestAnimationFrame(animate);
+    };
+
+    frameId = requestAnimationFrame(animate);
+
+    return () => {
+      cancelAnimationFrame(frameId);
+    };
+  }, [active, executor]);
+}
+
+// ============================================================================
+// useAnimationFrame - 通用动画循环 hook
+// ============================================================================
+
+/**
+ * 通用动画循环
+ */
+export function useAnimationFrame(callback: (deltaTime: number, time: number) => void, active = true): void {
   const callbackRef = useRef(callback);
   callbackRef.current = callback;
 
@@ -141,60 +158,13 @@ export function useAnimationFrame(
 }
 
 // ============================================================================
-// useGPUFrame - GPU 帧渲染 hook
+// useMouse - 鼠标位置 hook
 // ============================================================================
 
-export function useGPUFrame(
-  gpu: GPUContext | null,
-  render: (encoder: GPUCommandEncoder, target: GPUTextureView, deltaTime: number) => void,
-  active = true
-): void {
-  const renderRef = useRef(render);
-  renderRef.current = render;
-
-  const gpuRef = useRef(gpu);
-  gpuRef.current = gpu;
-
-  // 当 gpu 变化时更新 ref
-  useEffect(() => {
-    gpuRef.current = gpu;
-  }, [gpu]);
-
-  useEffect(() => {
-    if (!active || !gpu) return;
-
-    let frameId: number;
-    let lastTime = 0;
-
-    const animate = (time: number) => {
-      const deltaTime = lastTime ? time - lastTime : 0;
-      lastTime = time;
-
-      const currentGpu = gpuRef.current;
-      if (currentGpu) {
-        currentGpu.frame((encoder, target) => {
-          renderRef.current(encoder, target, deltaTime);
-        });
-      }
-
-      frameId = requestAnimationFrame(animate);
-    };
-
-    frameId = requestAnimationFrame(animate);
-
-    return () => {
-      cancelAnimationFrame(frameId);
-    };
-  }, [active, gpu]);
-}
-
-// ============================================================================
-// useMouse - 鼠标位置 hook (归一化到 -1 到 1)
-// ============================================================================
-
-export function useMouse(
-  canvasRef: React.RefObject<HTMLCanvasElement>
-): { x: number; y: number } {
+/**
+ * 获取归一化的鼠标位置 (-1 到 1)
+ */
+export function useMouse(canvasRef: React.RefObject<HTMLCanvasElement>): { x: number; y: number } {
   const [pos, setPos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {

@@ -1,12 +1,13 @@
 /**
  * SolidJS Primitives for FluxGPU
+ *
+ * 基于 IGPUAdapter 的六边形架构
  */
 
-/// <reference types="@webgpu/types" />
-
-import { createSignal, createEffect, onCleanup, createMemo, type Accessor } from 'solid-js';
-import type { StructType } from '@fluxgpu/dsl';
-import { GPUContext, ComputePass, RenderPass, UniformBuffer } from '@fluxgpu/engine';
+import { createSignal, createEffect, onCleanup, type Accessor } from 'solid-js';
+import type { IGPUAdapter, ICommandEncoder } from '@fluxgpu/contracts';
+import { AdapterExecutor } from '@fluxgpu/engine';
+import { BrowserGPUAdapter } from '@fluxgpu/host-browser';
 
 // ============================================================================
 // createGPU - 主要的 GPU 初始化 primitive
@@ -17,16 +18,22 @@ export interface CreateGPUOptions {
 }
 
 export interface CreateGPUReturn {
-  gpu: Accessor<GPUContext | null>;
+  adapter: Accessor<IGPUAdapter | null>;
+  executor: Accessor<AdapterExecutor | null>;
   error: Accessor<Error | null>;
   isLoading: Accessor<boolean>;
 }
 
-export function createGPU(
-  canvas: Accessor<HTMLCanvasElement | null>,
-  options: CreateGPUOptions = {}
-): CreateGPUReturn {
-  const [gpu, setGpu] = createSignal<GPUContext | null>(null);
+/**
+ * 初始化 GPU 适配器和执行器
+ *
+ * @example
+ * const [canvas, setCanvas] = createSignal<HTMLCanvasElement | null>(null);
+ * const { adapter, executor, isLoading, error } = createGPU(canvas);
+ */
+export function createGPU(canvas: Accessor<HTMLCanvasElement | null>, options: CreateGPUOptions = {}): CreateGPUReturn {
+  const [adapter, setAdapter] = createSignal<IGPUAdapter | null>(null);
+  const [executor, setExecutor] = createSignal<AdapterExecutor | null>(null);
   const [error, setError] = createSignal<Error | null>(null);
   const [isLoading, setIsLoading] = createSignal(true);
 
@@ -35,116 +42,71 @@ export function createGPU(
     if (!c) return;
 
     setIsLoading(true);
-    
-    GPUContext.create({ canvas: c, powerPreference: options.powerPreference })
-      .then((ctx) => {
-        setGpu(ctx);
+
+    const browserAdapter = new BrowserGPUAdapter({
+      canvas: c,
+      powerPreference: options.powerPreference,
+    });
+
+    const adapterExecutor = new AdapterExecutor({ adapter: browserAdapter });
+
+    adapterExecutor
+      .initialize()
+      .then(() => {
+        setAdapter(browserAdapter);
+        setExecutor(adapterExecutor);
         setError(null);
       })
       .catch((err) => {
         setError(err instanceof Error ? err : new Error(String(err)));
-        setGpu(null);
+        setAdapter(null);
+        setExecutor(null);
       })
       .finally(() => {
         setIsLoading(false);
       });
+
+    onCleanup(() => {
+      adapterExecutor.dispose();
+    });
   });
 
-  return { gpu, error, isLoading };
+  return { adapter, executor, error, isLoading };
 }
 
 // ============================================================================
-// createComputePass - 计算管线 primitive
+// createGPUFrame - GPU 帧渲染 primitive
 // ============================================================================
 
-export function createComputePass(
-  gpu: Accessor<GPUContext | null>,
-  shaderCode: Accessor<string> | string,
-  workgroupSize: [number, number?, number?] = [256]
-): Accessor<ComputePass | null> {
-  const code = typeof shaderCode === 'string' ? () => shaderCode : shaderCode;
-
-  return createMemo(() => {
-    const g = gpu();
-    const c = code();
-    if (g && c) {
-      return g.createComputePass(c, workgroupSize);
-    }
-    return null;
-  });
-}
-
-// ============================================================================
-// createRenderPass - 渲染管线 primitive
-// ============================================================================
-
-export interface CreateRenderPassOptions {
-  topology?: GPUPrimitiveTopology;
-  blend?: GPUBlendState;
-}
-
-export function createRenderPass(
-  gpu: Accessor<GPUContext | null>,
-  vertexShader: Accessor<string> | string,
-  fragmentShader: Accessor<string> | string,
-  options: CreateRenderPassOptions = {}
-): Accessor<RenderPass | null> {
-  const vertex = typeof vertexShader === 'string' ? () => vertexShader : vertexShader;
-  const fragment = typeof fragmentShader === 'string' ? () => fragmentShader : fragmentShader;
-
-  return createMemo(() => {
-    const g = gpu();
-    const v = vertex();
-    const f = fragment();
-    if (g && v && f) {
-      return g.createRenderPass(v, f, options);
-    }
-    return null;
-  });
-}
-
-// ============================================================================
-// createUniformBuffer - Uniform buffer primitive
-// ============================================================================
-
-export function createUniformBuffer<T extends StructType>(
-  gpu: Accessor<GPUContext | null>,
-  structType: T
-): Accessor<UniformBuffer<T> | null> {
-  return createMemo(() => {
-    const g = gpu();
-    if (g) {
-      return g.createUniformBuffer(structType);
-    }
-    return null;
-  });
-}
-
-// ============================================================================
-// createAnimationFrame - 动画循环 primitive
-// ============================================================================
-
-export interface CreateAnimationFrameReturn {
+export interface CreateGPUFrameReturn {
   start: () => void;
   stop: () => void;
   isRunning: Accessor<boolean>;
 }
 
-export function createAnimationFrame(
-  callback: (deltaTime: number, time: number) => void
-): CreateAnimationFrameReturn {
+/**
+ * GPU 帧渲染循环
+ */
+export function createGPUFrame(
+  executor: Accessor<AdapterExecutor | null>,
+  render: (encoder: ICommandEncoder, deltaTime: number) => void,
+  autoStart = true
+): CreateGPUFrameReturn {
   const [isRunning, setIsRunning] = createSignal(false);
   let frameId = 0;
   let lastTime = 0;
-  // 保存最新的回调引用
-  let currentCallback = callback;
 
   const animate = (time: number) => {
-    const deltaTime = lastTime ? time - lastTime : 0; // 毫秒
+    const deltaTime = lastTime ? time - lastTime : 0;
     lastTime = time;
-    
-    currentCallback(deltaTime, time);
-    
+
+    const e = executor();
+    if (e) {
+      e.frame((encoder) => {
+        render(encoder, deltaTime);
+      });
+    }
+
     frameId = requestAnimationFrame(animate);
   };
 
@@ -161,9 +123,47 @@ export function createAnimationFrame(
     cancelAnimationFrame(frameId);
   };
 
-  // 提供更新回调的方法
-  const updateCallback = (cb: typeof callback) => {
-    currentCallback = cb;
+  createEffect(() => {
+    if (executor() && autoStart) {
+      start();
+    }
+  });
+
+  onCleanup(stop);
+
+  return { start, stop, isRunning };
+}
+
+// ============================================================================
+// createAnimationFrame - 通用动画循环 primitive
+// ============================================================================
+
+export function createAnimationFrame(callback: (deltaTime: number, time: number) => void): CreateGPUFrameReturn {
+  const [isRunning, setIsRunning] = createSignal(false);
+  let frameId = 0;
+  let lastTime = 0;
+  let currentCallback = callback;
+
+  const animate = (time: number) => {
+    const deltaTime = lastTime ? time - lastTime : 0;
+    lastTime = time;
+
+    currentCallback(deltaTime, time);
+
+    frameId = requestAnimationFrame(animate);
+  };
+
+  const start = () => {
+    if (!isRunning()) {
+      setIsRunning(true);
+      lastTime = 0;
+      frameId = requestAnimationFrame(animate);
+    }
+  };
+
+  const stop = () => {
+    setIsRunning(false);
+    cancelAnimationFrame(frameId);
   };
 
   onCleanup(stop);
@@ -172,37 +172,12 @@ export function createAnimationFrame(
 }
 
 // ============================================================================
-// createGPUFrame - GPU 帧渲染 primitive
-// ============================================================================
-
-export function createGPUFrame(
-  gpu: Accessor<GPUContext | null>,
-  render: (encoder: GPUCommandEncoder, target: GPUTextureView, deltaTime: number) => void,
-  autoStart = true
-): CreateAnimationFrameReturn {
-  const { start, stop, isRunning } = createAnimationFrame((deltaTime) => {
-    const g = gpu();
-    if (g) {
-      g.frame((encoder, target) => {
-        // 直接调用 render，在 Solid 中如果 render 内部访问 signals，会自动获取最新值
-        render(encoder, target, deltaTime);
-      });
-    }
-  });
-  
-  createEffect(() => {
-    if (gpu() && autoStart) {
-      start();
-    }
-  });
-
-  return { start, stop, isRunning };
-}
-
-// ============================================================================
 // createMouse - 鼠标位置 primitive
 // ============================================================================
 
+/**
+ * 获取归一化的鼠标位置 (-1 到 1)
+ */
 export function createMouse(canvas: Accessor<HTMLCanvasElement | null>) {
   const [x, setX] = createSignal(0);
   const [y, setY] = createSignal(0);

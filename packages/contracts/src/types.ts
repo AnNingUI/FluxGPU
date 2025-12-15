@@ -10,6 +10,7 @@ export enum ResourceType {
   Sampler = 'sampler',
 }
 
+// Command opcodes (用于 protocol 包)
 export enum Opcode {
   CreateBuffer = 0x01,
   WriteBuffer = 0x02,
@@ -23,51 +24,17 @@ export interface ValidationResult {
   errors?: string[];
 }
 
-// Core interfaces
-export interface IGPUResource {
-  id: ResourceId;
-  type: ResourceType;
-  dispose(): void;
-}
-
-export interface ITexture extends IGPUResource {
-  type: ResourceType.Texture;
-  width: number;
-  height: number;
-  format: string;
-}
-
+// Graph node interface
 export interface IGraphNode {
   id: NodeId;
   dependencies: NodeId[];
   validate(): ValidationResult;
 }
 
-// Resource table type
-export interface ResourceTable {
-  get(id: ResourceId): IGPUResource | undefined;
-  set(id: ResourceId, resource: IGPUResource): void;
-  delete(id: ResourceId): boolean;
-  has(id: ResourceId): boolean;
-}
-
-// Command buffer type for dispatch
+// Command buffer type (用于 protocol 包)
 export interface CommandBuffer {
   id: CommandId;
   opcode: Opcode;
   payload: Uint8Array;
   dependencies: CommandId[];
-}
-
-// Executor interface
-export interface IExecutor {
-  dispatch(command: CommandBuffer): void;
-  getResourceTable(): ResourceTable;
-}
-
-// Runtime adapter interface
-export interface IRuntimeAdapter {
-  initialize(): Promise<void>;
-  createExecutor(): IExecutor;
-  supportsFeature(feature: string): boolean;
 }
