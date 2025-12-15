@@ -36,9 +36,9 @@ const Uniforms = defineStruct('Uniforms', {
 ### Compute Shader
 
 ```typescript
-import { shader, u32, length, normalize } from '@fluxgpu/dsl';
+import { ShaderBuilder, u32, f32, length } from '@fluxgpu/dsl';
 
-const computeShader = shader()
+const computeShader = new ShaderBuilder()
   .storage('particles', array(Particle), 0, 0, 'read_write')
   .uniform('uniforms', Uniforms, 0, 1)
   .compute([256], (ctx, { globalInvocationId }) => {
@@ -57,7 +57,9 @@ const computeShader = shader()
 ### Vertex/Fragment Shaders
 
 ```typescript
-const vertexShader = shader()
+import { ShaderBuilder, vec3, vec4, f32 } from '@fluxgpu/dsl';
+
+const vertexShader = new ShaderBuilder()
   .storage('particles', array(Particle), 0, 0, 'read')
   .vertex(
     { varyings: { color: { location: 0, type: vec3(f32) } } },
@@ -71,7 +73,7 @@ const vertexShader = shader()
   )
   .build();
 
-const fragmentShader = shader()
+const fragmentShader = new ShaderBuilder()
   .fragment(
     { inputs: { color: { location: 0, type: vec3(f32) } }, targets: 1 },
     (ctx, builtins, { color }) => ({
@@ -79,6 +81,26 @@ const fragmentShader = shader()
     })
   )
   .build();
+```
+
+### Struct Layout Utilities
+
+```typescript
+import { structSize, calculateStructLayout, createUniformBuffer } from '@fluxgpu/dsl';
+
+// Get struct byte size (for buffer creation)
+const size = structSize(Uniforms);
+
+// Get detailed layout info
+const layout = calculateStructLayout(Uniforms);
+// { fields: [...], size: number, align: number }
+
+// Create uniform buffer with automatic alignment
+const buffer = createUniformBuffer(Uniforms, {
+  deltaTime: 0.016,
+  time: 1.5,
+  mousePos: [0.5, 0.3],
+});
 ```
 
 ## Built-in Functions
@@ -92,8 +114,39 @@ const fragmentShader = shader()
 
 ## Type System
 
-- `f32`, `i32`, `u32`, `bool` - Scalar types
+- `f32`, `i32`, `u32`, `bool`, `f16` - Scalar types
 - `vec2(T)`, `vec3(T)`, `vec4(T)` - Vector types
 - `mat2x2(T)`, `mat3x3(T)`, `mat4x4(T)` - Matrix types
 - `array(T)` - Runtime-sized arrays
 - `defineStruct()` - Custom struct types
+
+## Expression API
+
+All expressions support chainable operators:
+
+```typescript
+// Arithmetic: add, sub, mul, div, mod, neg
+const sum = a.add(b);
+
+// Comparison: eq, ne, lt, le, gt, ge
+const isGreater = a.gt(b);
+
+// Logical: and, or, not
+const both = cond1.and(cond2);
+
+// Bitwise: bitAnd, bitOr, bitXor, bitNot, shl, shr
+const masked = value.bitAnd(mask);
+
+// Assignment statements
+ctx.exec(variable.set(newValue));
+ctx.exec(variable.addEq(delta));
+```
+
+## Vector Swizzling
+
+```typescript
+const pos = particle.$('position');  // vec2<f32>
+const x = pos.x;                     // f32
+const xy = velocity.xy;              // vec2
+const rgb = color.rgb;               // vec3
+```

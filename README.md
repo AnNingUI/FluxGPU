@@ -52,58 +52,165 @@ A modern WebGPU framework with Hexagonal Architecture, type-safe shader DSL, and
 ## Quick Start
 
 ```bash
-# Install
-pnpm add @fluxgpu/engine @fluxgpu/dsl @fluxgpu/react
+# Install core packages
+pnpm add @fluxgpu/engine @fluxgpu/host-browser @fluxgpu/contracts
 
-# Or with npm
-npm install @fluxgpu/engine @fluxgpu/dsl @fluxgpu/react
+# Add framework bindings (choose one)
+pnpm add @fluxgpu/react    # for React
+pnpm add @fluxgpu/vue      # for Vue
+pnpm add @fluxgpu/solid    # for SolidJS
+pnpm add @fluxgpu/preact   # for Preact
+
+# Optional: Type-safe shader DSL
+pnpm add @fluxgpu/dsl
 ```
 
 ### React Example
 
 ```tsx
-import { GPUCanvas } from '@fluxgpu/react';
-import { GPUContext } from '@fluxgpu/engine';
+import { useRef } from 'react';
+import { useGPU, useGPUFrame } from '@fluxgpu/react';
+import type { ICommandEncoder } from '@fluxgpu/contracts';
+import { AdapterExecutor } from '@fluxgpu/engine';
 
 function App() {
-  const handleReady = (gpu: GPUContext) => {
-    // Initialize your GPU resources
-  };
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { executor, isLoading, error } = useGPU(canvasRef);
 
-  const handleRender = (encoder: GPUCommandEncoder, target: GPUTextureView, dt: number) => {
-    // Render your frame
-  };
+  // Render loop
+  useGPUFrame(executor, (encoder: ICommandEncoder, deltaTime: number) => {
+    // Your render logic here
+  });
 
   return (
-    <GPUCanvas
-      width={800}
-      height={600}
-      onReady={handleReady}
-      onRender={handleRender}
+    <canvas
+      ref={canvasRef}
+      width={800 * devicePixelRatio}
+      height={600 * devicePixelRatio}
+      style={{ width: 800, height: 600 }}
     />
   );
+}
+```
+
+### Vue Example
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useGPU, useGPUFrame } from '@fluxgpu/vue';
+import type { ICommandEncoder } from '@fluxgpu/contracts';
+
+const canvasRef = ref<HTMLCanvasElement | null>(null);
+const { executor, isLoading, error } = useGPU(canvasRef);
+
+useGPUFrame(executor, (encoder: ICommandEncoder, deltaTime: number) => {
+  // Your render logic here
+});
+</script>
+
+<template>
+  <canvas ref="canvasRef" :width="800 * devicePixelRatio" :height="600 * devicePixelRatio" />
+</template>
+```
+
+### SolidJS Example
+
+```tsx
+import { createSignal } from 'solid-js';
+import { createGPU, createGPUFrame } from '@fluxgpu/solid';
+import type { ICommandEncoder } from '@fluxgpu/contracts';
+
+function App() {
+  const [canvas, setCanvas] = createSignal<HTMLCanvasElement | null>(null);
+  const { executor, isLoading, error } = createGPU(canvas);
+
+  createGPUFrame(executor, (encoder: ICommandEncoder, deltaTime: number) => {
+    // Your render logic here
+  });
+
+  return <canvas ref={setCanvas} width={800} height={600} />;
 }
 ```
 
 ### Shader DSL Example
 
 ```typescript
-import { shader, defineStruct, f32, vec2, vec3 } from '@fluxgpu/dsl';
+import { ShaderBuilder, defineStruct, f32, u32, vec2, vec3, array } from '@fluxgpu/dsl';
 
+// Define struct types
 const Particle = defineStruct('Particle', {
   position: vec2(f32),
   velocity: vec2(f32),
   color: vec3(f32),
+  life: f32,
 });
 
-const computeShader = shader()
+const Uniforms = defineStruct('Uniforms', {
+  deltaTime: f32,
+  time: f32,
+});
+
+// Build compute shader
+const computeShader = new ShaderBuilder()
   .storage('particles', array(Particle), 0, 0, 'read_write')
+  .uniform('uniforms', Uniforms, 0, 1)
   .compute([256], (ctx, { globalInvocationId }) => {
     const index = ctx.let('index', u32, globalInvocationId.x);
+    ctx.if(index.ge(particles.len()), () => ctx.return());
     // ... shader logic
   })
   .build();
 ```
+
+## Core API
+
+### AdapterExecutor
+
+The main entry point for GPU operations:
+
+```typescript
+import { AdapterExecutor } from '@fluxgpu/engine';
+import { BrowserGPUAdapter } from '@fluxgpu/host-browser';
+import { BufferUsage } from '@fluxgpu/contracts';
+
+// Initialize
+const adapter = new BrowserGPUAdapter({ canvas });
+const executor = new AdapterExecutor({ adapter });
+await executor.initialize();
+
+// Create resources
+const buffer = executor.createBuffer({
+  size: 1024,
+  usage: BufferUsage.STORAGE | BufferUsage.COPY_DST,
+});
+const shader = executor.createShaderModule(wgslCode);
+const pipeline = await executor.createComputePipeline({
+  shader,
+  entryPoint: 'main',
+});
+
+// Execute commands
+executor.frame((encoder) => {
+  const pass = encoder.beginComputePass();
+  pass.setPipeline(pipeline);
+  pass.setBindGroup(0, bindGroup);
+  pass.dispatchWorkgroups(64);
+  pass.end();
+});
+
+// Cleanup
+executor.dispose();
+```
+
+### Framework Bindings API
+
+| Framework | Hooks/Primitives | Components |
+|-----------|------------------|------------|
+| React | `useGPU`, `useGPUFrame`, `useMouse`, `useAnimationFrame` | `GPUCanvas`, `FluxCanvas`, `GPUStats` |
+| Vue | `useGPU`, `useGPUFrame`, `useMouse`, `useAnimationFrame` | `GPUCanvas`, `GPUStats` |
+| SolidJS | `createGPU`, `createGPUFrame`, `createMouse`, `createAnimationFrame` | `GPUCanvas`, `GPUStats` |
+| Preact | `useGPU`, `useGPUFrame`, `useMouse`, `useAnimationFrame` | `GPUCanvas`, `GPUStats` |
 
 ## Examples
 
@@ -121,8 +228,8 @@ pnpm --filter "@fluxgpu/example-vanilla-worker" dev  # http://localhost:8005 (ho
 
 | Example | Description |
 |---------|-------------|
-| vanilla | Basic TypeScript with GPUContext (direct mode) |
-| vanilla-worker | Using @fluxgpu/host-browser APIs (Worker mode ready) |
+| vanilla | Basic TypeScript with AdapterExecutor (direct mode) |
+| vanilla-worker | Using @fluxgpu/host-browser Worker APIs |
 | react | React hooks and components |
 | vue | Vue composables and components |
 | solid | SolidJS primitives and components |
