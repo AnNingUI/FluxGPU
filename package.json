@@ -29,9 +29,11 @@
 	],
 	"scripts": {
 		"build": "pnpm -r build",
+		"build:clean": "pnpm clean:tsbuildinfo && pnpm build",
 		"test": "pnpm -r test",
 		"lint": "pnpm -r lint",
 		"clean": "pnpm -r clean",
+		"clean:tsbuildinfo": "node -e \"const fs=require('fs');const path=require('path');function find(dir,pattern,results=[]){try{fs.readdirSync(dir).forEach(f=>{const p=path.join(dir,f);if(fs.statSync(p).isDirectory()&&f!=='node_modules')find(p,pattern,results);else if(f.match(pattern))results.push(p)})}catch{}return results}find('packages',/tsconfig\\.tsbuildinfo$/).forEach(f=>{try{fs.unlinkSync(f);console.log('Deleted:',f)}catch{}})\"",
 		"typecheck": "pnpm -r typecheck",
 		"validate:arch": "pnpm --filter @fluxgpu/arch-validator build && node packages/arch-validator/dist/cli.js",
 		"prebuild": "pnpm validate:arch",
