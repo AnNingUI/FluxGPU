@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Unified DSL for WGSL Shader Construction
  * 
  * 直接复用 types.js 和 builtins.js，提供统一的 shader 构建 API
@@ -15,6 +15,23 @@ import {
   lit,
   BoolType, I32Type, U32Type, F32Type, F16Type,
   Vec2Type, Vec3Type, Vec4Type,
+  // Sampler types
+  SamplerType, SamplerComparisonType,
+  sampler, samplerComparison,
+  // Texture types
+  Texture1DType, Texture2DType, Texture2DArrayType, Texture3DType,
+  TextureCubeType, TextureCubeArrayType, TextureMultisampled2DType,
+  TextureDepth2DType, TextureDepth2DArrayType, TextureDepthCubeType,
+  TextureDepthCubeArrayType, TextureDepthMultisampled2DType,
+  TextureStorage1DType, TextureStorage2DType, TextureStorage2DArrayType, TextureStorage3DType,
+  TextureExternalType,
+  TextureStorageFormat, StorageTextureAccess,
+  texture1d, texture2d, texture2dArray, texture3d,
+  textureCube, textureCubeArray, textureMultisampled2d,
+  textureDepth2d, textureDepth2dArray, textureDepthCube,
+  textureDepthCubeArray, textureDepthMultisampled2d,
+  textureStorage1d, textureStorage2d, textureStorage2dArray, textureStorage3d,
+  textureExternal,
 } from './types.js';
 
 import * as builtins from './builtins.js';
@@ -671,6 +688,44 @@ export class ShaderBuilder {
       `@group(${group}) @binding(${binding}) var<uniform> ${name}: ${type.__wgslType};`
     );
     return this.createTypedVar(name, type) as VarFor<T>;
+  }
+
+  /** 声明 texture 绑定 */
+  texture<T extends WGSLType>(
+    name: string,
+    type: T,
+    group: number,
+    binding: number
+  ): VarFor<T> {
+    this.collectType(type);
+    this.bindings.push(
+      `@group(${group}) @binding(${binding}) var ${name}: ${type.__wgslType};`
+    );
+    return this.createTypedVar(name, type) as VarFor<T>;
+  }
+
+  /** 声明 sampler 绑定 */
+  sampler(
+    name: string,
+    group: number,
+    binding: number
+  ): Expr<SamplerType> {
+    this.bindings.push(
+      `@group(${group}) @binding(${binding}) var ${name}: sampler;`
+    );
+    return new Expr(sampler, name);
+  }
+
+  /** 声明 comparison sampler 绑定（用于阴影贴图等）*/
+  samplerComparison(
+    name: string,
+    group: number,
+    binding: number
+  ): Expr<SamplerComparisonType> {
+    this.bindings.push(
+      `@group(${group}) @binding(${binding}) var ${name}: sampler_comparison;`
+    );
+    return new Expr(samplerComparison, name);
   }
 
   /** 定义 compute shader 入口 */

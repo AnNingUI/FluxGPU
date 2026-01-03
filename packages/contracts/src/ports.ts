@@ -55,8 +55,22 @@ export interface IGPUAdapter {
   /** 读取 Buffer 数据 */
   readBuffer(buffer: IBuffer): Promise<ArrayBuffer>;
 
+  /** 写入 Texture 数据 */
+  writeTexture(
+    destination: ImageCopyTexture,
+    data: ArrayBuffer | ArrayBufferView,
+    dataLayout: ImageDataLayout,
+    size: TextureSize
+  ): void;
+
   /** 获取渲染目标（如果有） */
   getRenderTarget(): IRenderTarget | null;
+
+  /** 创建 BindGroup */
+  createBindGroup(descriptor: BindGroupDescriptor): IBindGroup;
+
+  /** 创建 Sampler */
+  createSampler(descriptor?: SamplerDescriptor): ISampler;
 
   /** 清理资源 */
   dispose(): void;
@@ -357,6 +371,13 @@ export interface ImageCopyTexture {
   mipLevel?: number;
   origin?: { x?: number; y?: number; z?: number };
   aspect?: 'all' | 'stencil-only' | 'depth-only';
+}
+
+/** Image data layout for texture writes */
+export interface ImageDataLayout {
+  offset?: number;
+  bytesPerRow?: number;
+  rowsPerImage?: number;
 }
 
 /** Compute Pass 编码器接口 */

@@ -1,8 +1,7 @@
 {
-  "name": "@fluxgpu/example-vanilla",
-  "version": "1.2.0",
+  "name": "@fluxgpu-examples/texture-demo",
+  "version": "5.2.0",
   "private": true,
-  "description": "FluxGPU Vanilla TypeScript Demo",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -17,8 +16,8 @@
     "@fluxgpu/host-browser": "workspace:*"
   },
   "devDependencies": {
-    "@webgpu/types": "^0.1.67",
-    "typescript": "^5.3.3",
-    "vite": "^5.0.0"
+    "@webgpu/types": "^0.1.40",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
   }
 }

@@ -1,6 +1,6 @@
 {
 	"name": "fluxgpu",
-	"version": "5.1.1",
+	"version": "5.2.0",
 	"private": true,
 	"description": "Modern WebGPU framework with Hexagonal Architecture, type-safe shader DSL, and first-class framework bindings",
 	"author": "AnNingUI",

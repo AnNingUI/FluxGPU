@@ -36,6 +36,7 @@ import type {
   ColorValue,
   TextureSize,
   ImageCopyTexture,
+  ImageDataLayout,
 } from '@fluxgpu/contracts';
 import type { ResourceId } from '@fluxgpu/contracts';
 import { InitializationError, RuntimeError } from '@fluxgpu/contracts';
@@ -302,6 +303,35 @@ export class BrowserGPUAdapter implements IGPUAdapter {
     stagingBuffer.destroy();
 
     return data;
+  }
+
+  writeTexture(
+    destination: ImageCopyTexture,
+    data: ArrayBuffer | ArrayBufferView,
+    dataLayout: ImageDataLayout,
+    size: TextureSize
+  ): void {
+    this.ensureInitialized();
+    const gpuTexture = (destination.texture as BrowserTexture).gpuTexture;
+    // Handle buffer source similar to writeBuffer
+    const bufferSource: BufferSource = data instanceof ArrayBuffer
+      ? data
+      : new Uint8Array(data.buffer as ArrayBuffer, data.byteOffset, data.byteLength);
+    this.device!.queue.writeTexture(
+      {
+        texture: gpuTexture,
+        mipLevel: destination.mipLevel,
+        origin: destination.origin,
+        aspect: destination.aspect as GPUTextureAspect,
+      },
+      bufferSource,
+      {
+        offset: dataLayout.offset,
+        bytesPerRow: dataLayout.bytesPerRow,
+        rowsPerImage: dataLayout.rowsPerImage,
+      },
+      size
+    );
   }
 
   getRenderTarget(): IRenderTarget | null {

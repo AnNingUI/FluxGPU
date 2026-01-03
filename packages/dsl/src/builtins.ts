@@ -11,6 +11,14 @@ import {
   Vec2Type, Vec3Type, Vec4Type,
   Mat2x2Type, Mat3x3Type, Mat4x4Type,
   bool, i32, u32, f32, f16, vec2, vec3, vec4,
+  // Texture and Sampler types
+  SamplerType, SamplerComparisonType,
+  Texture1DType, Texture2DType, Texture2DArrayType, Texture3DType,
+  TextureCubeType, TextureCubeArrayType, TextureMultisampled2DType,
+  TextureDepth2DType, TextureDepth2DArrayType, TextureDepthCubeType,
+  TextureDepthCubeArrayType, TextureDepthMultisampled2DType,
+  TextureStorage1DType, TextureStorage2DType, TextureStorage2DArrayType, TextureStorage3DType,
+  TextureExternalType,
 } from './types.js';
 
 // ============================================================================
@@ -245,25 +253,330 @@ export function arrayLength<T extends ArrayExpr<any>>(arr: T): Expr<U32Type> {
 // Texture Functions
 // ============================================================================
 
+// --- Texture Sampling ---
+
+/**
+ * textureSample - 使用采样器对纹理进行采样
+ * @param texture 采样纹理
+ * @param sampler 采样器
+ * @param coords 纹理坐标
+ * @param offset 可选的常量偏移
+ */
+export function textureSample(
+  texture: Expr<Texture2DType<F32Type>>,
+  samplerExpr: Expr<SamplerType>,
+  coords: Expr<Vec2Type<F32Type>>,
+  offset?: Expr<Vec2Type<I32Type>>
+): VecExpr<Vec4Type<F32Type>>;
+export function textureSample(
+  texture: Expr<Texture3DType<F32Type>>,
+  samplerExpr: Expr<SamplerType>,
+  coords: Expr<Vec3Type<F32Type>>,
+  offset?: Expr<Vec3Type<I32Type>>
+): VecExpr<Vec4Type<F32Type>>;
+export function textureSample(
+  texture: Expr<TextureCubeType<F32Type>>,
+  samplerExpr: Expr<SamplerType>,
+  coords: Expr<Vec3Type<F32Type>>
+): VecExpr<Vec4Type<F32Type>>;
 export function textureSample(
   texture: Expr<any>,
-  sampler: Expr<any>,
-  coords: VecExpr<Vec2Type<F32Type>>
+  samplerExpr: Expr<SamplerType>,
+  coords: Expr<any>,
+  offset?: Expr<any>
 ): VecExpr<Vec4Type<F32Type>> {
-  return new VecExpr(vec4(f32), `textureSample(${texture.toWGSL()}, ${sampler.toWGSL()}, ${coords.toWGSL()})`);
+  const offsetStr = offset ? `, ${offset.toWGSL()}` : '';
+  return new VecExpr(vec4(f32), `textureSample(${texture.toWGSL()}, ${samplerExpr.toWGSL()}, ${coords.toWGSL()}${offsetStr})`);
 }
 
+/**
+ * textureSampleBias - 使用 LOD 偏移进行采样
+ */
+export function textureSampleBias(
+  texture: Expr<Texture2DType<F32Type>>,
+  samplerExpr: Expr<SamplerType>,
+  coords: Expr<Vec2Type<F32Type>>,
+  bias: Expr<F32Type>,
+  offset?: Expr<Vec2Type<I32Type>>
+): VecExpr<Vec4Type<F32Type>> {
+  const offsetStr = offset ? `, ${offset.toWGSL()}` : '';
+  return new VecExpr(vec4(f32), `textureSampleBias(${texture.toWGSL()}, ${samplerExpr.toWGSL()}, ${coords.toWGSL()}, ${bias.toWGSL()}${offsetStr})`);
+}
+
+/**
+ * textureSampleLevel - 指定 LOD 级别采样
+ */
+export function textureSampleLevel(
+  texture: Expr<Texture2DType<F32Type>>,
+  samplerExpr: Expr<SamplerType>,
+  coords: Expr<Vec2Type<F32Type>>,
+  level: Expr<F32Type>,
+  offset?: Expr<Vec2Type<I32Type>>
+): VecExpr<Vec4Type<F32Type>>;
+export function textureSampleLevel(
+  texture: Expr<Texture3DType<F32Type>>,
+  samplerExpr: Expr<SamplerType>,
+  coords: Expr<Vec3Type<F32Type>>,
+  level: Expr<F32Type>,
+  offset?: Expr<Vec3Type<I32Type>>
+): VecExpr<Vec4Type<F32Type>>;
+export function textureSampleLevel(
+  texture: Expr<TextureCubeType<F32Type>>,
+  samplerExpr: Expr<SamplerType>,
+  coords: Expr<Vec3Type<F32Type>>,
+  level: Expr<F32Type>
+): VecExpr<Vec4Type<F32Type>>;
+export function textureSampleLevel(
+  texture: Expr<any>,
+  samplerExpr: Expr<SamplerType>,
+  coords: Expr<any>,
+  level: Expr<F32Type>,
+  offset?: Expr<any>
+): VecExpr<Vec4Type<F32Type>> {
+  const offsetStr = offset ? `, ${offset.toWGSL()}` : '';
+  return new VecExpr(vec4(f32), `textureSampleLevel(${texture.toWGSL()}, ${samplerExpr.toWGSL()}, ${coords.toWGSL()}, ${level.toWGSL()}${offsetStr})`);
+}
+
+/**
+ * textureSampleGrad - 使用显式梯度进行采样
+ */
+export function textureSampleGrad(
+  texture: Expr<Texture2DType<F32Type>>,
+  samplerExpr: Expr<SamplerType>,
+  coords: Expr<Vec2Type<F32Type>>,
+  ddx: Expr<Vec2Type<F32Type>>,
+  ddy: Expr<Vec2Type<F32Type>>,
+  offset?: Expr<Vec2Type<I32Type>>
+): VecExpr<Vec4Type<F32Type>> {
+  const offsetStr = offset ? `, ${offset.toWGSL()}` : '';
+  return new VecExpr(vec4(f32), `textureSampleGrad(${texture.toWGSL()}, ${samplerExpr.toWGSL()}, ${coords.toWGSL()}, ${ddx.toWGSL()}, ${ddy.toWGSL()}${offsetStr})`);
+}
+
+// --- Depth Texture Sampling ---
+
+/**
+ * textureSampleCompare - 深度纹理比较采样（用于阴影贴图）
+ */
+export function textureSampleCompare(
+  texture: Expr<TextureDepth2DType>,
+  samplerExpr: Expr<SamplerComparisonType>,
+  coords: Expr<Vec2Type<F32Type>>,
+  depthRef: Expr<F32Type>,
+  offset?: Expr<Vec2Type<I32Type>>
+): Expr<F32Type> {
+  const offsetStr = offset ? `, ${offset.toWGSL()}` : '';
+  return new Expr(f32, `textureSampleCompare(${texture.toWGSL()}, ${samplerExpr.toWGSL()}, ${coords.toWGSL()}, ${depthRef.toWGSL()}${offsetStr})`);
+}
+
+/**
+ * textureSampleCompareLevel - 深度纹理比较采样（指定 LOD 为 0）
+ */
+export function textureSampleCompareLevel(
+  texture: Expr<TextureDepth2DType>,
+  samplerExpr: Expr<SamplerComparisonType>,
+  coords: Expr<Vec2Type<F32Type>>,
+  depthRef: Expr<F32Type>,
+  offset?: Expr<Vec2Type<I32Type>>
+): Expr<F32Type> {
+  const offsetStr = offset ? `, ${offset.toWGSL()}` : '';
+  return new Expr(f32, `textureSampleCompareLevel(${texture.toWGSL()}, ${samplerExpr.toWGSL()}, ${coords.toWGSL()}, ${depthRef.toWGSL()}${offsetStr})`);
+}
+
+// --- Texture Array Sampling ---
+
+/**
+ * textureSample for 2D array texture
+ */
+export function textureSampleArray(
+  texture: Expr<Texture2DArrayType<F32Type>>,
+  samplerExpr: Expr<SamplerType>,
+  coords: Expr<Vec2Type<F32Type>>,
+  arrayIndex: Expr<I32Type | U32Type>,
+  offset?: Expr<Vec2Type<I32Type>>
+): VecExpr<Vec4Type<F32Type>> {
+  const offsetStr = offset ? `, ${offset.toWGSL()}` : '';
+  return new VecExpr(vec4(f32), `textureSample(${texture.toWGSL()}, ${samplerExpr.toWGSL()}, ${coords.toWGSL()}, ${arrayIndex.toWGSL()}${offsetStr})`);
+}
+
+/**
+ * textureSampleLevel for 2D array texture
+ */
+export function textureSampleLevelArray(
+  texture: Expr<Texture2DArrayType<F32Type>>,
+  samplerExpr: Expr<SamplerType>,
+  coords: Expr<Vec2Type<F32Type>>,
+  arrayIndex: Expr<I32Type | U32Type>,
+  level: Expr<F32Type>,
+  offset?: Expr<Vec2Type<I32Type>>
+): VecExpr<Vec4Type<F32Type>> {
+  const offsetStr = offset ? `, ${offset.toWGSL()}` : '';
+  return new VecExpr(vec4(f32), `textureSampleLevel(${texture.toWGSL()}, ${samplerExpr.toWGSL()}, ${coords.toWGSL()}, ${arrayIndex.toWGSL()}, ${level.toWGSL()}${offsetStr})`);
+}
+
+// --- Texture Gather ---
+
+/**
+ * textureGather - 从 4 个纹素中聚集单个分量
+ * @param component 要聚集的分量 (0=x, 1=y, 2=z, 3=w)
+ */
+export function textureGather(
+  component: 0 | 1 | 2 | 3,
+  texture: Expr<Texture2DType<F32Type>>,
+  samplerExpr: Expr<SamplerType>,
+  coords: Expr<Vec2Type<F32Type>>,
+  offset?: Expr<Vec2Type<I32Type>>
+): VecExpr<Vec4Type<F32Type>> {
+  const offsetStr = offset ? `, ${offset.toWGSL()}` : '';
+  return new VecExpr(vec4(f32), `textureGather(${component}, ${texture.toWGSL()}, ${samplerExpr.toWGSL()}, ${coords.toWGSL()}${offsetStr})`);
+}
+
+/**
+ * textureGatherCompare - 从 4 个深度纹素中聚集比较结果
+ */
+export function textureGatherCompare(
+  texture: Expr<TextureDepth2DType>,
+  samplerExpr: Expr<SamplerComparisonType>,
+  coords: Expr<Vec2Type<F32Type>>,
+  depthRef: Expr<F32Type>,
+  offset?: Expr<Vec2Type<I32Type>>
+): VecExpr<Vec4Type<F32Type>> {
+  const offsetStr = offset ? `, ${offset.toWGSL()}` : '';
+  return new VecExpr(vec4(f32), `textureGatherCompare(${texture.toWGSL()}, ${samplerExpr.toWGSL()}, ${coords.toWGSL()}, ${depthRef.toWGSL()}${offsetStr})`);
+}
+
+// --- Texture Load (Direct Access) ---
+
+/**
+ * textureLoad - 直接加载单个纹素（不使用采样器）
+ */
+export function textureLoad(
+  texture: Expr<Texture2DType>,
+  coords: Expr<Vec2Type<I32Type | U32Type>>,
+  level: Expr<I32Type | U32Type>
+): VecExpr<Vec4Type<F32Type>>;
+export function textureLoad(
+  texture: Expr<Texture3DType>,
+  coords: Expr<Vec3Type<I32Type | U32Type>>,
+  level: Expr<I32Type | U32Type>
+): VecExpr<Vec4Type<F32Type>>;
+export function textureLoad(
+  texture: Expr<TextureMultisampled2DType>,
+  coords: Expr<Vec2Type<I32Type | U32Type>>,
+  sampleIndex: Expr<I32Type | U32Type>
+): VecExpr<Vec4Type<F32Type>>;
+export function textureLoad(
+  texture: Expr<TextureDepth2DType>,
+  coords: Expr<Vec2Type<I32Type | U32Type>>,
+  level: Expr<I32Type | U32Type>
+): Expr<F32Type>;
 export function textureLoad(
   texture: Expr<any>,
-  coords: VecExpr<Vec2Type<I32Type>>,
-  level?: Expr<I32Type>
-): VecExpr<Vec4Type<F32Type>> {
-  const levelStr = level ? `, ${level.toWGSL()}` : '';
-  return new VecExpr(vec4(f32), `textureLoad(${texture.toWGSL()}, ${coords.toWGSL()}${levelStr})`);
+  coords: Expr<any>,
+  levelOrSample: Expr<I32Type | U32Type>
+): VecExpr<Vec4Type<F32Type>> | Expr<F32Type> {
+  // 简化处理，返回 vec4<f32>
+  return new VecExpr(vec4(f32), `textureLoad(${texture.toWGSL()}, ${coords.toWGSL()}, ${levelOrSample.toWGSL()})`);
 }
 
-export function textureDimensions(texture: Expr<any>): VecExpr<Vec2Type<U32Type>> {
-  return new VecExpr(vec2(u32), `textureDimensions(${texture.toWGSL()})`);
+/**
+ * textureLoad for 2D array texture
+ */
+export function textureLoadArray(
+  texture: Expr<Texture2DArrayType>,
+  coords: Expr<Vec2Type<I32Type | U32Type>>,
+  arrayIndex: Expr<I32Type | U32Type>,
+  level: Expr<I32Type | U32Type>
+): VecExpr<Vec4Type<F32Type>> {
+  return new VecExpr(vec4(f32), `textureLoad(${texture.toWGSL()}, ${coords.toWGSL()}, ${arrayIndex.toWGSL()}, ${level.toWGSL()})`);
+}
+
+// --- Texture Store (Storage Texture Write) ---
+
+/**
+ * textureStore - 写入存储纹理
+ */
+export function textureStore(
+  texture: Expr<TextureStorage2DType<any, 'write'> | TextureStorage2DType<any, 'read_write'>>,
+  coords: Expr<Vec2Type<I32Type | U32Type>>,
+  value: Expr<Vec4Type<F32Type>> | Expr<Vec4Type<I32Type>> | Expr<Vec4Type<U32Type>>
+): string {
+  return `textureStore(${texture.toWGSL()}, ${coords.toWGSL()}, ${value.toWGSL()})`;
+}
+
+/**
+ * textureStore for 3D storage texture
+ */
+export function textureStore3D(
+  texture: Expr<TextureStorage3DType<any, 'write'> | TextureStorage3DType<any, 'read_write'>>,
+  coords: Expr<Vec3Type<I32Type | U32Type>>,
+  value: Expr<Vec4Type<F32Type>> | Expr<Vec4Type<I32Type>> | Expr<Vec4Type<U32Type>>
+): string {
+  return `textureStore(${texture.toWGSL()}, ${coords.toWGSL()}, ${value.toWGSL()})`;
+}
+
+/**
+ * textureStore for 2D array storage texture
+ */
+export function textureStoreArray(
+  texture: Expr<TextureStorage2DArrayType<any, 'write'> | TextureStorage2DArrayType<any, 'read_write'>>,
+  coords: Expr<Vec2Type<I32Type | U32Type>>,
+  arrayIndex: Expr<I32Type | U32Type>,
+  value: Expr<Vec4Type<F32Type>> | Expr<Vec4Type<I32Type>> | Expr<Vec4Type<U32Type>>
+): string {
+  return `textureStore(${texture.toWGSL()}, ${coords.toWGSL()}, ${arrayIndex.toWGSL()}, ${value.toWGSL()})`;
+}
+
+// --- Texture Dimensions ---
+
+/**
+ * textureDimensions - 获取纹理尺寸
+ */
+export function textureDimensions(
+  texture: Expr<Texture1DType>,
+  level?: Expr<I32Type | U32Type>
+): Expr<U32Type>;
+export function textureDimensions(
+  texture: Expr<Texture2DType | TextureDepth2DType | TextureMultisampled2DType | TextureStorage2DType<any, any> | TextureExternalType>,
+  level?: Expr<I32Type | U32Type>
+): VecExpr<Vec2Type<U32Type>>;
+export function textureDimensions(
+  texture: Expr<Texture3DType | TextureCubeType | TextureStorage3DType<any, any>>,
+  level?: Expr<I32Type | U32Type>
+): VecExpr<Vec3Type<U32Type>>;
+export function textureDimensions(
+  texture: Expr<any>,
+  level?: Expr<I32Type | U32Type>
+): VecExpr<Vec2Type<U32Type>> | VecExpr<Vec3Type<U32Type>> | Expr<U32Type> {
+  const levelStr = level ? `, ${level.toWGSL()}` : '';
+  // 默认返回 vec2<u32>
+  return new VecExpr(vec2(u32), `textureDimensions(${texture.toWGSL()}${levelStr})`);
+}
+
+/**
+ * textureNumLayers - 获取数组纹理的层数
+ */
+export function textureNumLayers(
+  texture: Expr<Texture2DArrayType | TextureDepth2DArrayType | TextureCubeArrayType | TextureDepthCubeArrayType | TextureStorage2DArrayType<any, any>>
+): Expr<U32Type> {
+  return new Expr(u32, `textureNumLayers(${texture.toWGSL()})`);
+}
+
+/**
+ * textureNumLevels - 获取纹理的 mipmap 级别数
+ */
+export function textureNumLevels(
+  texture: Expr<Texture1DType | Texture2DType | Texture2DArrayType | Texture3DType | TextureCubeType | TextureCubeArrayType | TextureDepth2DType | TextureDepth2DArrayType | TextureDepthCubeType | TextureDepthCubeArrayType>
+): Expr<U32Type> {
+  return new Expr(u32, `textureNumLevels(${texture.toWGSL()})`);
+}
+
+/**
+ * textureNumSamples - 获取多重采样纹理的采样数
+ */
+export function textureNumSamples(
+  texture: Expr<TextureMultisampled2DType | TextureDepthMultisampled2DType>
+): Expr<U32Type> {
+  return new Expr(u32, `textureNumSamples(${texture.toWGSL()})`);
 }
 
 // ============================================================================

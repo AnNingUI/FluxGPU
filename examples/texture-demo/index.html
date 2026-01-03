@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FluxGPU - Texture & Sampler Demo</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0a0a0f;
+      color: #e0e0e0;
+      min-height: 100vh;
+    }
+    .header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      padding: 20px 40px;
+      border-bottom: 1px solid #333;
+    }
+    .header h1 { font-size: 24px; color: #fff; }
+    .header p { color: #888; margin-top: 5px; }
+    .main {
+      display: grid;
+      grid-template-columns: 1fr 450px;
+      height: calc(100vh - 80px);
+    }
+    .canvas-container { position: relative; background: #000; }
+    #gpuCanvas { width: 100%; height: 100%; display: block; }
+    .overlay {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(0,0,0,0.8);
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .overlay .stat { display: flex; justify-content: space-between; margin: 5px 0; gap: 20px; }
+    .overlay .stat span:last-child { color: #4fc3f7; font-weight: bold; }
+    .sidebar {
+      background: #111;
+      padding: 20px;
+      overflow-y: auto;
+      border-left: 1px solid #333;
+    }
+    .section { margin-bottom: 25px; }
+    .section h3 {
+      color: #4fc3f7;
+      font-size: 14px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #333;
+    }
+    .feature-list { display: flex; flex-wrap: wrap; gap: 8px; }
+    .feature {
+      background: #1a1a2e;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+      border: 1px solid #333;
+    }
+    .feature.sampler { border-color: #ff9800; color: #ff9800; }
+    .feature.texture { border-color: #4caf50; color: #4caf50; }
+    .feature.depth { border-color: #9c27b0; color: #9c27b0; }
+    .feature.storage { border-color: #f44336; color: #f44336; }
+    .feature.builtin { border-color: #2196f3; color: #2196f3; }
+    .code-block {
+      background: #1a1a1a;
+      border-radius: 6px;
+      padding: 15px;
+      font-family: 'Fira Code', 'Consolas', monospace;
+      font-size: 11px;
+      overflow-x: auto;
+      max-height: 250px;
+      overflow-y: auto;
+      line-height: 1.4;
+    }
+    .code-block pre { white-space: pre-wrap; word-break: break-all; }
+    .controls { display: flex; flex-direction: column; gap: 10px; }
+    .control-row { display: flex; align-items: center; gap: 10px; }
+    .control-row label { flex: 1; font-size: 13px; }
+    .control-row input[type="range"] { flex: 2; }
+    .control-row span { width: 50px; text-align: right; font-size: 12px; color: #4fc3f7; }
+    button {
+      background: #4fc3f7;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+    button:hover { background: #81d4fa; }
+    .status { padding: 10px; border-radius: 4px; font-size: 13px; }
+    .status.success { background: #1b5e20; }
+    .status.error { background: #b71c1c; }
+    .status.info { background: #1a237e; }
+    .tabs { display: flex; gap: 5px; margin-bottom: 10px; }
+    .tab {
+      padding: 8px 16px;
+      background: #222;
+      border: none;
+      color: #888;
+      cursor: pointer;
+      border-radius: 4px 4px 0 0;
+      font-size: 12px;
+    }
+    .tab.active { background: #1a1a1a; color: #4fc3f7; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>FluxGPU Texture & Sampler Demo</h1>
+    <p>Demonstrating all new texture types, samplers, and sampling functions</p>
+  </div>
+
+  <div class="main">
+    <div class="canvas-container">
+      <canvas id="gpuCanvas"></canvas>
+      <div class="overlay">
+        <div class="stat"><span>FPS:</span><span id="fps">0</span></div>
+        <div class="stat"><span>Texture Size:</span><span id="texSize">0x0</span></div>
+        <div class="stat"><span>Effect:</span><span id="effectName">Basic Sample</span></div>
+      </div>
+    </div>
+
+    <div class="sidebar">
+      <div class="section">
+        <h3>Sampler Types</h3>
+        <div class="feature-list">
+          <div class="feature sampler">sampler</div>
+          <div class="feature sampler">sampler_comparison</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Texture Types</h3>
+        <div class="feature-list">
+          <div class="feature texture">texture_2d</div>
+          <div class="feature texture">texture_2d_array</div>
+          <div class="feature texture">texture_3d</div>
+          <div class="feature texture">texture_cube</div>
+          <div class="feature depth">texture_depth_2d</div>
+          <div class="feature storage">texture_storage_2d</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Sampling Functions</h3>
+        <div class="feature-list">
+          <div class="feature builtin">textureSample</div>
+          <div class="feature builtin">textureSampleLevel</div>
+          <div class="feature builtin">textureSampleBias</div>
+          <div class="feature builtin">textureSampleGrad</div>
+          <div class="feature builtin">textureSampleCompare</div>
+          <div class="feature builtin">textureLoad</div>
+          <div class="feature builtin">textureStore</div>
+          <div class="feature builtin">textureDimensions</div>
+          <div class="feature builtin">textureGather</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Effects Demo (21 Total)</h3>
+        <div class="feature-list">
+          <div class="feature" style="border-color:#888;color:#888;">Basic</div>
+          <div class="feature" style="border-color:#e91e63;color:#e91e63;">Image Processing</div>
+          <div class="feature" style="border-color:#00bcd4;color:#00bcd4;">SDF Shapes</div>
+          <div class="feature" style="border-color:#ffeb3b;color:#ffeb3b;">Dynamic</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Status</h3>
+        <div id="status" class="status info">Initializing...</div>
+      </div>
+
+      <div class="section">
+        <h3>Controls</h3>
+        <div class="controls">
+          <div class="control-row">
+            <label>LOD Level</label>
+            <input type="range" id="lodLevel" min="0" max="4" step="0.1" value="0">
+            <span id="lodVal">0.0</span>
+          </div>
+          <div class="control-row">
+            <label>Intensity</label>
+            <input type="range" id="intensity" min="0" max="2" step="0.05" value="1">
+            <span id="intensityVal">1.00</span>
+          </div>
+          <div class="control-row">
+            <label>Effect</label>
+            <select id="effectSelect" style="flex:2; padding:5px; background:#222; color:#fff; border:1px solid #444;">
+              <optgroup label="Basic Effects">
+                <option value="0">Basic Sample</option>
+                <option value="1">LOD Sampling</option>
+                <option value="2">Grayscale</option>
+                <option value="3">Invert Colors</option>
+              </optgroup>
+              <optgroup label="Image Processing">
+                <option value="4">Edge Detection (Sobel)</option>
+                <option value="5">Blur</option>
+                <option value="6">Sharpen</option>
+                <option value="7">Emboss</option>
+                <option value="8">Vignette</option>
+                <option value="9">Chromatic Aberration</option>
+                <option value="10">Pixelate</option>
+              </optgroup>
+              <optgroup label="SDF Effects">
+                <option value="11">SDF Circle</option>
+                <option value="12">SDF Box</option>
+                <option value="13">SDF Ring</option>
+                <option value="14">SDF Glow</option>
+                <option value="15">SDF Outline</option>
+                <option value="16">SDF Soft Shadow</option>
+                <option value="17">SDF Combined (Animated)</option>
+              </optgroup>
+              <optgroup label="Dynamic Effects">
+                <option value="18">Wave Distortion</option>
+                <option value="19">Ripple</option>
+                <option value="20">Kaleidoscope</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Generated WGSL Shaders</h3>
+        <div class="tabs">
+          <button class="tab active" data-tab="vertex">Vertex</button>
+          <button class="tab" data-tab="fragment">Fragment</button>
+          <button class="tab" data-tab="compute">Compute</button>
+        </div>
+        <div id="vertex" class="tab-content active">
+          <div class="code-block"><pre id="vertexCode">Loading...</pre></div>
+        </div>
+        <div id="fragment" class="tab-content">
+          <div class="code-block"><pre id="fragmentCode">Loading...</pre></div>
+        </div>
+        <div id="compute" class="tab-content">
+          <div class="code-block"><pre id="computeCode">Loading...</pre></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
+      });
+    });
+  </script>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 {
   "name": "@fluxgpu/arch-validator",
-  "version": "5.1.1",
+  "version": "5.2.0",
   "description": "Static analysis tool for validating FluxGPU hexagonal architecture constraints",
   "author": "AnNingUI",
   "license": "MIT",

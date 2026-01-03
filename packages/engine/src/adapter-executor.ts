@@ -13,10 +13,16 @@ import type {
   IComputePipeline,
   IRenderPipeline,
   ICommandEncoder,
+  ISampler,
   BufferDescriptor,
   TextureDescriptor,
   ComputePipelineDescriptor,
   RenderPipelineDescriptor,
+  SamplerDescriptor,
+  BindGroupDescriptor,
+  ImageDataLayout,
+  TextureSize,
+  ImageCopyTexture,
   GPUTextureFormatType,
   ResourceId,
   IBindGroup,
@@ -37,8 +43,8 @@ export interface AdapterExecutorConfig {
 // ============================================================================
 
 interface ManagedResource {
-  type: 'buffer' | 'texture' | 'shader' | 'computePipeline' | 'renderPipeline' | 'bindGroup';
-  resource: IBuffer | ITexture | IShaderModule | IComputePipeline | IRenderPipeline | IBindGroup;
+  type: 'buffer' | 'texture' | 'shader' | 'computePipeline' | 'renderPipeline' | 'bindGroup' | 'sampler';
+  resource: IBuffer | ITexture | IShaderModule | IComputePipeline | IRenderPipeline | IBindGroup | ISampler;
 }
 
 // ============================================================================
@@ -167,6 +173,38 @@ export class AdapterExecutor {
   async readBuffer(buffer: IBuffer): Promise<ArrayBuffer> {
     this.ensureInitialized();
     return this.adapter.readBuffer(buffer);
+  }
+
+  /**
+   * 写入 Texture 数据
+   */
+  writeTexture(
+    destination: ImageCopyTexture,
+    data: ArrayBuffer | ArrayBufferView,
+    dataLayout: ImageDataLayout,
+    size: TextureSize
+  ): void {
+    this.ensureInitialized();
+    this.adapter.writeTexture(destination, data, dataLayout, size);
+  }
+
+  /**
+   * 创建 Sampler
+   */
+  createSampler(descriptor: SamplerDescriptor = {}): ISampler {
+    this.ensureInitialized();
+    const sampler = this.adapter.createSampler(descriptor);
+    return sampler;
+  }
+
+  /**
+   * 创建 BindGroup
+   */
+  createBindGroup(descriptor: BindGroupDescriptor): IBindGroup {
+    this.ensureInitialized();
+    const bindGroup = this.adapter.createBindGroup(descriptor);
+    this.resources.set(bindGroup.id, { type: 'bindGroup', resource: bindGroup });
+    return bindGroup;
   }
 
   // ========== 命令执行 ==========
