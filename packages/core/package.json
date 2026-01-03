@@ -1,6 +1,6 @@
 {
   "name": "@fluxgpu/core",
-  "version": "5.2.0",
+  "version": "5.2.1",
   "description": "Core domain logic for FluxGPU - graph orchestration, shadow state management, and validation",
   "author": "AnNingUI",
   "license": "MIT",

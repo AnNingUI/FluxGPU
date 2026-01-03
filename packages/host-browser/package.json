@@ -1,6 +1,6 @@
 {
   "name": "@fluxgpu/host-browser",
-  "version": "5.2.0",
+  "version": "5.2.1",
   "description": "Browser runtime adapter for FluxGPU - Workers, DOM integration, and canvas management",
   "author": "AnNingUI",
   "license": "MIT",
