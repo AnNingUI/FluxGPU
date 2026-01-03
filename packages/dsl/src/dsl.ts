@@ -765,17 +765,20 @@ export class ShaderBuilder {
   }
 
   /** 定义 vertex shader 入口 */
-  vertex<TVaryings extends Record<string, { location: number; type: WGSLType }>>(
+  vertex<
+    TAttributes extends Record<string, VertexAttribute>,
+    TVaryings extends Record<string, { location: number; type: WGSLType }>
+  >(
     config: {
       /** 顶点属性输入 */
-      attributes?: Record<string, VertexAttribute>;
+      attributes?: TAttributes;
       /** 输出到片段着色器的 varyings */
       varyings?: TVaryings;
     },
     body: (
       ctx: ShaderContext,
       builtins: VertexBuiltins,
-      inputs: { [K in keyof typeof config.attributes]: VarFor<NonNullable<typeof config.attributes>[K]['type']> }
+      inputs: { [K in keyof TAttributes]: VarFor<TAttributes[K]['type']> }
     ) => VertexOutputConfig
   ): this {
     this.currentLines = [];
@@ -801,7 +804,7 @@ export class ShaderBuilder {
     const params: string[] = [];
     params.push(`@builtin(vertex_index) vertex_index: u32`);
     params.push(`@builtin(instance_index) instance_index: u32`);
-    for (const [name, attr] of Object.entries(attributes)) {
+    for (const [name, attr] of Object.entries(attributes) as [string, VertexAttribute][]) {
       params.push(`@location(${attr.location}) ${name}: ${attr.type.__wgslType}`);
     }
 
@@ -821,7 +824,7 @@ export class ShaderBuilder {
 
     // 创建输入变量
     const inputs: Record<string, any> = {};
-    for (const [name, attr] of Object.entries(attributes)) {
+    for (const [name, attr] of Object.entries(attributes) as [string, VertexAttribute][]) {
       inputs[name] = this.createTypedVar(name, attr.type);
     }
 

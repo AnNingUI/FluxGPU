@@ -2,13 +2,19 @@
  * Tests for Unified DSL
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
+  array,
+  cos,
   defineStruct,
-  shader,
-  f32, u32, vec2, vec3, array,
+  f32,
+  length,
   lit, makeVec2, makeVec3, makeVec4,
-  normalize, length, sin, cos, toF32,
+  normalize,
+  shader,
+  sin,
+  toF32,
+  u32, vec2, vec3,
 } from './dsl.js';
 
 describe('Unified DSL: Type-Safe Shader Construction', () => {
@@ -313,6 +319,52 @@ describe('Unified DSL: Vertex and Fragment Shaders', () => {
     expect(code).toContain('@vertex');
     expect(code).toContain('fn main(');
     expect(code).toContain('@builtin(vertex_index) vertex_index: u32');
+  });
+
+  it('should correctly infer vertex attributes input types', () => {
+    const builder = shader();
+
+    const code = builder
+      .vertex(
+        {
+          attributes: {
+            position: { location: 0, type: vec3(f32) },
+            normal: { location: 1, type: vec3(f32) },
+            uv: { location: 2, type: vec2(f32) },
+          },
+          varyings: {
+            vNormal: { location: 0, type: vec3(f32) },
+            vUv: { location: 1, type: vec2(f32) },
+          },
+        },
+        (ctx, _builtins, inputs) => {
+          // 类型测试: inputs 应该正确推断为 { position: VarFor<vec3<f32>>, normal: VarFor<vec3<f32>>, uv: VarFor<vec2<f32>> }
+          // 如果类型推断失败（变成 {}），下面的代码会报类型错误
+          const pos = inputs.position;   // 应该是 vec3<f32> 类型
+          const norm = inputs.normal;    // 应该是 vec3<f32> 类型
+          const texCoord = inputs.uv;    // 应该是 vec2<f32> 类型
+
+          // 验证可以使用 swizzle 访问分量
+          const posX = pos.x;
+          const posY = pos.y;
+          const posZ = pos.z;
+
+          return {
+            position: makeVec4(f32, posX, posY, posZ, 1.0),
+            varyings: {
+              vNormal: { location: 0, value: norm },
+              vUv: { location: 1, value: texCoord },
+            },
+          };
+        }
+      )
+      .build();
+
+      // 验证生成的 WGSL 包含正确的属性绑定
+    expect(code).toContain('@location(0) position: vec3<f32>');
+    expect(code).toContain('@location(1) normal: vec3<f32>');
+    expect(code).toContain('@location(2) uv: vec2<f32>');
+    expect(code).toContain('@vertex');
   });
 
   it('should create a fragment shader with inputs', () => {
