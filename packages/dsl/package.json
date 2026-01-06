@@ -1,6 +1,6 @@
 {
   "name": "@fluxgpu/dsl",
-  "version": "5.2.1",
+  "version": "5.2.2",
   "description": "Type-safe functional shader DSL for WebGPU - write WGSL with TypeScript",
   "author": "AnNingUI",
   "license": "MIT",

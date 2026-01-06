@@ -5,6 +5,8 @@
  * Every WGSL type and operation is represented with proper TypeScript types.
  */
 
+import { makeVec2 } from "./dsl";
+
 // ============================================================================
 // Base Type System
 // ============================================================================
@@ -682,6 +684,10 @@ export class Expr<T extends WGSLType = WGSLType> implements WGSLExpr<T> {
 // ============================================================================
 
 export class VecExpr<T extends VectorType> extends Expr<T> {
+  static asExpr<T extends VectorType>(expr: Expr<T>) {
+    return new VecExpr(expr.type, expr.toWGSL());
+  }
+
   // Swizzle accessors for vec2
   get x(): Expr<T['__elementType']> {
     return new Expr((this.type as any).__elementType, `${this.toWGSL()}.x`);
@@ -773,3 +779,5 @@ export function litVec3(x: number, y: number, z: number): VecExpr<Vec3Type<F32Ty
 export function litVec4(x: number, y: number, z: number, w: number): VecExpr<Vec4Type<F32Type>> {
   return new VecExpr(vec4(f32), `vec4<f32>(${x}, ${y}, ${z}, ${w})`);
 }
+
+const raw = makeVec2(f32, 0, 0);

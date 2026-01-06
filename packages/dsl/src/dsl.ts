@@ -552,6 +552,7 @@ function createElementRef<T extends WGSLType>(code: string, type: T): ElementRef
 export interface ShaderContext {
   // 变量声明
   let<T extends WGSLType>(name: string, type: T, value: Expr<any>): VarFor<T>;
+  val<T extends WGSLType>(name: string, value: Expr<T>): VarFor<T>;
   var<T extends WGSLType>(name: string, type: T, value?: Expr<any>): VarFor<T>;
   const<T extends WGSLType>(name: string, type: T, value: Expr<any>): VarFor<T>;
 
@@ -1002,6 +1003,12 @@ export class ShaderBuilder {
         return self.createTypedVar(name, type) as VarFor<T>;
       },
 
+      val<T extends WGSLType>(name: string, value: Expr<T>): VarFor<T> {
+        const type = value.type
+        self.emit(`let ${name}: ${type.__wgslType} = ${value.toWGSL()};`);
+        return self.createTypedVar(name, type) as VarFor<T>;
+      },
+
       var<T extends WGSLType>(name: string, type: T, value?: Expr<any>): VarFor<T> {
         const init = value ? ` = ${value.toWGSL()}` : '';
         self.emit(`var ${name}: ${type.__wgslType}${init};`);
@@ -1167,3 +1174,41 @@ export function vec4FromVec3<T extends ScalarType>(
   const elementType = (xyz.type as Vec3Type<T>).__elementType;
   return new VecExpr(vec4(elementType), `vec4<${elementType.__wgslType}>(${xyz.toWGSL()}, ${w})`);
 }
+
+
+type Cs = [number, () => void];
+interface Sw {
+	value(v: Expr<I32Type | U32Type>): Sw;
+	case(cs: Cs): Sw;
+	def(b: () => void): Sw;
+	$(): void;
+}
+export const sw = (ctx: ShaderContext) => {
+	const cas: { case: number | "default"; body: () => void }[] = [];
+	let _va: Expr<I32Type | U32Type>;
+	const v: Sw = {
+		value(va: Expr<I32Type | U32Type>) {
+			_va = va;
+			return v;
+		},
+		case(cs: Cs) {
+			cas.push({
+				case: cs[0],
+				body: cs[1],
+			});
+			return v;
+		},
+		def(b: () => void) {
+			cas.push({
+				case: "default",
+				body: b,
+			});
+			return v;
+		},
+		$() {
+			ctx.switch(_va, cas);
+		},
+	};
+
+	return v;
+};

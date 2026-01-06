@@ -1,6 +1,6 @@
 {
   "name": "@fluxgpu/react",
-  "version": "5.2.1",
+  "version": "5.2.2",
   "description": "React hooks and components for FluxGPU - GPUCanvas, useGPUFrame, and more",
   "author": "AnNingUI",
   "license": "MIT",
