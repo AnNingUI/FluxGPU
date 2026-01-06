@@ -1,6 +1,6 @@
 {
   "name": "@fluxgpu/engine",
-  "version": "5.2.5",
+  "version": "5.2.6",
   "description": "WebGPU execution engine - high-level API for compute and render pipelines",
   "author": "AnNingUI",
   "license": "MIT",

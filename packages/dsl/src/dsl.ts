@@ -714,6 +714,181 @@ export interface FragmentOutputConfig {
 }
 
 // ============================================================================
+// Fn - 可用于注入的 函数类
+// ============================================================================
+
+/** 函数参数定义元组 [name, type] */
+type FnArg<N extends string = string, T extends WGSLType = WGSLType> = [N, T];
+
+/** 从参数元组数组提取参数记录类型 */
+type ArgsToRecord<Args extends FnArg[]> = {
+	[K in Args[number] as K[0]]: K[1];
+};
+
+/** 根据类型返回对应的表达式类型 */
+type ExprFor<T extends WGSLType> = T extends VectorType
+	? VecExpr<T>
+	: T extends StructType
+	? StructExpr<T>
+	: T extends ArrayType
+	? ArrayExpr<T>
+	: Expr<T>;
+
+/** 函数上下文 - 扩展 ShaderContext，添加参数访问 */
+interface FnContext<Args extends Record<string, WGSLType>> extends ShaderContext {
+	/** 获取函数参数表达式 */
+	$<K extends keyof Args & string>(argName: K): ExprFor<Args[K]>;
+}
+
+/** 函数调用参数类型 */
+type FnCallArgs<Args extends FnArg[]> = {
+	[K in keyof Args]: Args[K] extends FnArg<any, infer T> ? Expr<T> | number : never;
+};
+
+/**
+ * Fn 类 - 可定义并注入到 ShaderBuilder 的函数
+ */
+export class Fn<
+	Args extends FnArg[] = [],
+	Output extends WGSLType | void = void,
+	Name extends string = string
+> {
+	private constructor(
+		readonly fnName: Name,
+		readonly args: Args,
+		readonly outputType: Output,
+		readonly bodyFn: ((ctx: FnContext<ArgsToRecord<Args>>) => Output extends void ? void : Expr<Output & WGSLType>) | null
+	) {}
+
+	/** 开始定义函数 - 设置函数名 */
+	static name<N extends string>(name: N): FnBuilder1<N> {
+		return new FnBuilder1(name);
+	}
+
+	/** 获取函数的 WGSL 代码 */
+	toWGSL(emitFn: (line: string) => void, createContext: () => ShaderContext): void {
+		if (!this.bodyFn) return;
+
+		// 构建参数列表
+		const params = this.args
+			.map(([name, type]) => `${name}: ${type.__wgslType}`)
+			.join(", ");
+
+		// 构建返回类型
+		const returnType = this.outputType ? ` -> ${(this.outputType as WGSLType).__wgslType}` : "";
+
+		emitFn(`fn ${this.fnName}(${params})${returnType} {`);
+
+		// 创建函数上下文
+		const baseCtx = createContext();
+		const fnCtx: FnContext<ArgsToRecord<Args>> = {
+			...baseCtx,
+			$: (argName: string): any => {
+				const argDef = this.args.find(([n]) => n === argName);
+				if (!argDef) throw new Error(`Unknown argument: ${argName}`);
+				const type = argDef[1];
+				return createTypedExpr(argName, type);
+			},
+		};
+
+		const result = this.bodyFn(fnCtx);
+		if (result && this.outputType) {
+			emitFn(`  return ${(result as Expr<any>).toWGSL()};`);
+		}
+
+		emitFn(`}`);
+	}
+
+	/** 调用此函数 */
+	call(...args: FnCallArgs<Args>): Output extends void ? void : ExprFor<Output & WGSLType> {
+		const argsCode = args
+			.map((arg) => (typeof arg === "number" ? `${arg}` : (arg as Expr<any>).toWGSL()))
+			.join(", ");
+		const callCode = `${this.fnName}(${argsCode})`;
+
+		if (!this.outputType) {
+			return undefined as any;
+		}
+
+		return createTypedExpr(callCode, this.outputType as WGSLType) as any;
+	}
+
+	/** 作为语句调用（用于无返回值函数）*/
+	callStmt(...args: FnCallArgs<Args>): string {
+		const argsCode = args
+			.map((arg) => (typeof arg === "number" ? `${arg}` : (arg as Expr<any>).toWGSL()))
+			.join(", ");
+		return `${this.fnName}(${argsCode})`;
+	}
+}
+
+/** 工厂函数：根据类型创建对应的表达式 */
+function createTypedExpr<T extends WGSLType>(code: string, type: T): ExprFor<T> {
+	if (isVectorType(type)) {
+		return new VecExpr(type, code) as ExprFor<T>;
+	}
+	if (isStructType(type)) {
+		return new StructExpr(type, code) as ExprFor<T>;
+	}
+	if (isArrayType(type)) {
+		return new ArrayExpr(type, code) as ExprFor<T>;
+	}
+	return new Expr(type, code) as ExprFor<T>;
+}
+
+/** 阶段1：已设置名称 */
+class FnBuilder1<Name extends string> {
+	constructor(readonly fnName: Name) {}
+
+	/** 设置输入参数 */
+	input<A extends FnArg[]>(...args: A): FnBuilder2<Name, A> {
+		return new FnBuilder2(this.fnName, args);
+	}
+
+	/** 无输入参数，直接设置输出 */
+	output<O extends WGSLType>(type: O): FnBuilder3<Name, [], O> {
+		return new FnBuilder3(this.fnName, [], type);
+	}
+
+	/** 无输入参数，无返回值 */
+	body(fn: (ctx: FnContext<{}>) => void): Fn<[], void, Name> {
+		return new (Fn as any)(this.fnName, [], undefined, fn);
+	}
+}
+
+/** 阶段2：已设置输入 */
+class FnBuilder2<Name extends string, Args extends FnArg[]> {
+	constructor(
+		readonly fnName: Name,
+		readonly args: Args
+	) {}
+
+	/** 设置输出类型 */
+	output<O extends WGSLType>(type: O): FnBuilder3<Name, Args, O> {
+		return new FnBuilder3(this.fnName, this.args, type);
+	}
+
+	/** 无返回值函数体 */
+	body(fn: (ctx: FnContext<ArgsToRecord<Args>>) => void): Fn<Args, void, Name> {
+		return new (Fn as any)(this.fnName, this.args, undefined, fn);
+	}
+}
+
+/** 阶段3：已设置输出 */
+class FnBuilder3<Name extends string, Args extends FnArg[], Output extends WGSLType> {
+	constructor(
+		readonly fnName: Name,
+		readonly args: Args,
+		readonly outputType: Output
+	) {}
+
+	/** 定义函数体 */
+	body(fn: (ctx: FnContext<ArgsToRecord<Args>>) => Expr<Output>): Fn<Args, Output, Name> {
+		return new (Fn as any)(this.fnName, this.args, this.outputType, fn);
+	}
+}
+
+// ============================================================================
 // Shader Builder - 主 API
 // ============================================================================
 
@@ -786,6 +961,36 @@ export class ShaderBuilder {
 			`@group(${group}) @binding(${binding}) var ${name}: sampler_comparison;`
 		);
 		return new Expr(samplerComparison, name);
+	}
+
+	/** 注入自定义函数到 shader */
+	injectFn<
+		Args extends FnArg[],
+		Output extends WGSLType | void,
+		Name extends string
+	>(fn: Fn<Args, Output, Name>): this {
+		// 保存当前状态
+		const prevLines = this.currentLines;
+		const prevIndent = this.indent;
+
+		// 创建新的行列表用于函数
+		this.currentLines = [];
+		this.indent = 0;
+
+		// 生成函数代码
+		fn.toWGSL(
+			(line) => this.emit(line),
+			() => this.createContext()
+		);
+
+		// 添加到 functions 列表
+		this.functions.push(this.currentLines.join("\n"));
+
+		// 恢复状态
+		this.currentLines = prevLines;
+		this.indent = prevIndent;
+
+		return this;
 	}
 
 	/** 定义 compute shader 入口 */
