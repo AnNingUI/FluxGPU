@@ -127,7 +127,7 @@ export function min<T extends ScalarType | VectorType>(x: Expr<T>, y: Expr<T>): 
   return new Expr(x.type, `min(${x.toWGSL()}, ${y.toWGSL()})`);
 }
 
-export function mix<T extends F32Type | F16Type | VectorType>(x: Expr<T>, y: Expr<T>, a: Expr<T>): Expr<T> {
+export function mix<T extends F32Type | F16Type | VectorType>(x: Expr<T>, y: Expr<T>, a: T extends F32Type | F16Type ? Expr<T> : Expr<F32Type | F16Type | T>): Expr<T> {
   return new Expr(x.type, `mix(${x.toWGSL()}, ${y.toWGSL()}, ${a.toWGSL()})`);
 }
 

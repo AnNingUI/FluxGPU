@@ -194,7 +194,7 @@ export function createSDFFragmentShader(): string {
 				const mixedColor = ctx.builtins.mix(
 					finalColor,
 					borderColor,
-					makeVec4(f32, borderAlpha, borderAlpha, borderAlpha, borderAlpha)
+					borderAlpha
 				);
 				ctx.exec(finalColor.set(mixedColor));
 			});
