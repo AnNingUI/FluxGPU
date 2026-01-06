@@ -1,6 +1,6 @@
 {
   "name": "@fluxgpu/solid",
-  "version": "5.2.3",
+  "version": "5.2.4",
   "description": "SolidJS primitives and components for FluxGPU - reactive GPU programming",
   "author": "AnNingUI",
   "license": "MIT",

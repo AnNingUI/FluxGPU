@@ -1,6 +1,6 @@
 {
   "name": "@fluxgpu/vue",
-  "version": "5.2.3",
+  "version": "5.2.4",
   "description": "Vue 3 composables and components for FluxGPU - Composition API integration",
   "author": "AnNingUI",
   "license": "MIT",

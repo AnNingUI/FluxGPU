@@ -1,6 +1,6 @@
 {
   "name": "@fluxgpu/example-react",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "private": true,
   "description": "FluxGPU React Demo",
   "type": "module",

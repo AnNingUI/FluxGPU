@@ -1,6 +1,6 @@
 {
   "name": "@fluxgpu/example-vanilla-worker",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "private": true,
   "description": "FluxGPU Vanilla TypeScript Demo with Worker Mode (host-browser)",
   "type": "module",

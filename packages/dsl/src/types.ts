@@ -1,11 +1,9 @@
 /**
  * Complete WGSL Type System with TypeScript type inference
- * 
+ *
  * This module provides a fully type-safe DSL for WGSL shader programming.
  * Every WGSL type and operation is represented with proper TypeScript types.
  */
-
-import { makeVec2 } from "./dsl";
 
 // ============================================================================
 // Base Type System
@@ -779,5 +777,3 @@ export function litVec3(x: number, y: number, z: number): VecExpr<Vec3Type<F32Ty
 export function litVec4(x: number, y: number, z: number, w: number): VecExpr<Vec4Type<F32Type>> {
   return new VecExpr(vec4(f32), `vec4<f32>(${x}, ${y}, ${z}, ${w})`);
 }
-
-const raw = makeVec2(f32, 0, 0);

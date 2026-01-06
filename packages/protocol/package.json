@@ -1,6 +1,6 @@
 {
   "name": "@fluxgpu/protocol",
-  "version": "5.2.3",
+  "version": "5.2.4",
   "description": "Platform-agnostic binary communication protocol for GPU command serialization",
   "author": "AnNingUI",
   "license": "MIT",

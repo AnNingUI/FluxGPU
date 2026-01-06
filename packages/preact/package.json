@@ -1,6 +1,6 @@
 {
   "name": "@fluxgpu/preact",
-  "version": "5.2.3",
+  "version": "5.2.4",
   "description": "Preact hooks and components for FluxGPU - lightweight alternative to @fluxgpu/react",
   "author": "AnNingUI",
   "license": "MIT",
