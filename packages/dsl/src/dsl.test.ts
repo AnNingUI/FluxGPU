@@ -9,13 +9,13 @@ import {
   defineStruct,
   f32,
   length,
-  lit, makeVec2, makeVec3, makeVec4,
+  lit, loop, makeVec2, makeVec3, makeVec4,
   normalize,
   shader,
   sin,
   toF32,
   u32, vec2, vec3,
-} from './dsl.js';
+} from './core/index.js';
 
 describe('Unified DSL: Type-Safe Shader Construction', () => {
   it('should create a simple compute shader with type safety', () => {
@@ -55,7 +55,7 @@ describe('Unified DSL: Type-Safe Shader Construction', () => {
 
         ctx.exec(particles.$at(index).set(particle));
       })
-      .build();
+      .build(); console.log(code);
 
     expect(code).toContain('struct Particle');
     expect(code).toContain('struct Uniforms');
@@ -163,14 +163,9 @@ describe('Unified DSL: Type-Safe Shader Construction', () => {
           }
         );
 
-        ctx.for(
-          { name: 'i', type: u32, start: 0 },
-          (i) => i.lt(lit(10, u32)),
-          (i) => i.addEq(lit(1, u32)),
-          (i) => {
-            ctx.exec(y.addEq(lit(0.1, f32)));
-          }
-        );
+        loop(ctx, 'i', u32).lt(10).do(i => {
+          ctx.exec(y.addEq(lit(0.1, f32)));
+        });
       })
       .build();
 
