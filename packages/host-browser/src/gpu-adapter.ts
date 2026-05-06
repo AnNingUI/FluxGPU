@@ -77,7 +77,7 @@ export interface BrowserGPUAdapterConfig {
  *
  * 直接实现 IGPUAdapter 接口，与 WebGPU API 交互
  */
-export class BrowserGPUAdapter implements IGPUAdapter {
+export class BrowserGPUAdapter implements IGPUAdapter, IAsNative<GPUDevice> {
   private device: GPUDevice | null = null;
   private adapter: GPUAdapter | null = null;
   private context: GPUCanvasContext | null = null;
@@ -139,6 +139,11 @@ export class BrowserGPUAdapter implements IGPUAdapter {
 
   isInitialized(): boolean {
     return this.initialized;
+  }
+
+  asNative(): GPUDevice {
+    this.ensureInitialized();
+    return this.device!;
   }
 
   getPreferredFormat(): GPUTextureFormatType {
