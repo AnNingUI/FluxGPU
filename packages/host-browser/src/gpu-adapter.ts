@@ -37,9 +37,10 @@ import type {
   TextureSize,
   ImageCopyTexture,
   ImageDataLayout,
+  IAsNative,
 } from '@fluxgpu/contracts';
 import type { ResourceId } from '@fluxgpu/contracts';
-import { InitializationError, RuntimeError } from '@fluxgpu/contracts';
+import { InitializationError, RuntimeError, nativeOf } from '@fluxgpu/contracts';
 
 // ============================================================================
 // ID 生成器
@@ -419,12 +420,16 @@ export class BrowserGPUAdapter implements IGPUAdapter {
 // ============================================================================
 
 /** Browser Buffer 实现 */
-class BrowserBuffer implements IBuffer {
+class BrowserBuffer implements IBuffer, IAsNative<GPUBuffer> {
   constructor(
     readonly id: ResourceId,
     readonly gpuBuffer: GPUBuffer,
     private descriptor: BufferDescriptor
   ) {}
+
+  asNative(): GPUBuffer {
+    return this.gpuBuffer;
+  }
 
   get size(): number {
     return this.descriptor.size;
@@ -444,7 +449,7 @@ class BrowserBuffer implements IBuffer {
 }
 
 /** Browser Texture 实现 */
-class BrowserTexture implements ITexture {
+class BrowserTexture implements ITexture, IAsNative<GPUTexture> {
   readonly width: number;
   readonly height: number;
   readonly format: GPUTextureFormatType;
@@ -461,6 +466,10 @@ class BrowserTexture implements ITexture {
     this.format = descriptor.format;
     this.usage = descriptor.usage;
     this.label = descriptor.label;
+  }
+
+  asNative(): GPUTexture {
+    return this.gpuTexture;
   }
 
   createView(viewDescriptor?: TextureViewDescriptor): ITextureView {
@@ -486,7 +495,7 @@ class BrowserTexture implements ITexture {
 }
 
 /** Browser TextureView 实现 */
-class BrowserTextureView implements ITextureView {
+class BrowserTextureView implements ITextureView, IAsNative<GPUTextureView> {
   readonly texture: ITexture;
 
   constructor(
@@ -496,24 +505,36 @@ class BrowserTextureView implements ITextureView {
   ) {
     this.texture = texture;
   }
+
+  asNative(): GPUTextureView {
+    return this.gpuView;
+  }
 }
 
 /** Browser ShaderModule 实现 */
-class BrowserShaderModule implements IShaderModule {
+class BrowserShaderModule implements IShaderModule, IAsNative<GPUShaderModule> {
   constructor(
     readonly id: ResourceId,
     readonly gpuModule: GPUShaderModule,
     readonly label?: string
   ) {}
+
+  asNative(): GPUShaderModule {
+    return this.gpuModule;
+  }
 }
 
 /** Browser ComputePipeline 实现 */
-class BrowserComputePipeline implements IComputePipeline {
+class BrowserComputePipeline implements IComputePipeline, IAsNative<GPUComputePipeline> {
   constructor(
     readonly id: ResourceId,
     readonly gpuPipeline: GPUComputePipeline,
     readonly label?: string
   ) {}
+
+  asNative(): GPUComputePipeline {
+    return this.gpuPipeline;
+  }
 
   getBindGroupLayout(index: number): IBindGroupLayout {
     const gpuLayout = this.gpuPipeline.getBindGroupLayout(index);
@@ -638,6 +659,54 @@ class BrowserCommandEncoder implements ICommandEncoder {
     );
   }
 
+  copyTextureToBuffer(
+    source: ImageCopyTexture,
+    destination: IBuffer,
+    copySize: TextureSize
+  ): void {
+    const width = copySize.width;
+    const bpp = 4; // 默认 RGBA8
+    const bytesPerRow = Math.ceil((width * bpp) / 256) * 256;
+
+    this.gpuEncoder.copyTextureToBuffer(
+      {
+        texture: (source.texture as BrowserTexture).gpuTexture,
+        mipLevel: source.mipLevel,
+        origin: source.origin,
+        aspect: source.aspect as GPUTextureAspect,
+      },
+      {
+        buffer: (destination as BrowserBuffer).gpuBuffer,
+        bytesPerRow,
+      },
+      copySize
+    );
+  }
+
+  copyBufferToTexture(
+    source: IBuffer,
+    destination: ImageCopyTexture,
+    copySize: TextureSize
+  ): void {
+    const width = copySize.width;
+    const bpp = 4;
+    const bytesPerRow = Math.ceil((width * bpp) / 256) * 256;
+
+    this.gpuEncoder.copyBufferToTexture(
+      {
+        buffer: (source as BrowserBuffer).gpuBuffer,
+        bytesPerRow,
+      },
+      {
+        texture: (destination.texture as BrowserTexture).gpuTexture,
+        mipLevel: destination.mipLevel,
+        origin: destination.origin,
+        aspect: destination.aspect as GPUTextureAspect,
+      },
+      copySize
+    );
+  }
+
   copyTextureToTexture(
     source: ImageCopyTexture,
     destination: ImageCopyTexture,
@@ -667,8 +736,11 @@ class BrowserCommandEncoder implements ICommandEncoder {
 }
 
 /** Browser ComputePassEncoder 实现 */
-class BrowserComputePassEncoder implements IComputePassEncoder {
+class BrowserComputePassEncoder implements IComputePassEncoder, IAsNative<GPUComputePassEncoder> {
   constructor(private gpuPass: GPUComputePassEncoder) {}
+  asNative(): GPUComputePassEncoder {
+    return this.gpuPass;
+  }
 
   setPipeline(pipeline: IComputePipeline): void {
     this.gpuPass.setPipeline((pipeline as BrowserComputePipeline).gpuPipeline);

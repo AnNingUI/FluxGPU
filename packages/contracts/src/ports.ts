@@ -238,6 +238,15 @@ export interface MultisampleState {
 // ============================================================================
 // 抽象资源接口
 // ============================================================================
+export interface IAsNative<T> {
+  asNative(): T
+}
+
+/** 从 FluxGPU 抽象资源获取原生对象 */
+export function nativeOf<T>(resource: unknown): T {
+  return (resource as IAsNative<T>).asNative()
+}
+
 
 /** 抽象 Buffer 接口 */
 export interface IBuffer {
@@ -325,6 +334,16 @@ export interface ICommandEncoder {
     source: ImageCopyTexture,
     destination: ImageCopyTexture,
     copySize: TextureSize
+  ): void;
+  copyTextureToBuffer(
+    source: ImageCopyTexture,
+    destination: IBuffer,
+    copySize: TextureSize,
+  ): void;
+  copyBufferToTexture(
+    source: IBuffer,
+    destination: ImageCopyTexture,
+    copySize: TextureSize,
   ): void;
   finish(): ICommandBuffer;
 }

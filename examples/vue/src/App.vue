@@ -3,7 +3,7 @@
  * FluxGPU Vue Demo - 使用新的六边形架构
  */
 
-import { ref, onMounted, onUnmounted, watch } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import type { ICommandEncoder, IBuffer, IComputePipeline, IRenderPipeline, IBindGroup } from '@fluxgpu/contracts';
 import { BufferUsage } from '@fluxgpu/contracts';
 import { AdapterExecutor } from '@fluxgpu/engine';

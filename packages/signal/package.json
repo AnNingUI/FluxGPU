@@ -1,0 +1,51 @@
+{
+	"name": "@fluxgpu/signal",
+	"version": "5.3.1",
+	"description": "基于信号量更新的数据驱动的WebGPU渲染框架",
+	"author": "AnNingUI",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/AnNingUI/FluxGPU.git",
+		"directory": "packages/signal"
+	},
+	"keywords": [
+		"fluxgpu",
+		"webgpu",
+		"signals",
+		"composables",
+		"composition-api",
+		"components",
+		"gpu",
+		"graphics"
+	],
+	"type": "module",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist",
+		"README.md"
+	],
+	"scripts": {
+		"build": "tsc -b",
+		"clean": "rm -rf dist",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@fluxgpu/contracts": "workspace:*",
+		"@fluxgpu/engine": "workspace:*"
+	},
+	"peerDependencies": {
+		"vue": "^3.3.0"
+	},
+	"devDependencies": {
+		"vue": "^3.4.0",
+		"typescript": "^5.3.3"
+	}
+}
