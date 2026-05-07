@@ -77,7 +77,7 @@ export interface BrowserGPUAdapterConfig {
  *
  * 直接实现 IGPUAdapter 接口，与 WebGPU API 交互
  */
-export class BrowserGPUAdapter implements IGPUAdapter, IAsNative<GPUDevice> {
+export class BrowserGPUAdapter implements IGPUAdapter, IAsNative<GPUAdapter> {
   private device: GPUDevice | null = null;
   private adapter: GPUAdapter | null = null;
   private context: GPUCanvasContext | null = null;
@@ -141,9 +141,8 @@ export class BrowserGPUAdapter implements IGPUAdapter, IAsNative<GPUDevice> {
     return this.initialized;
   }
 
-  asNative(): GPUDevice {
-    this.ensureInitialized();
-    return this.device!;
+  asNative(): GPUAdapter {
+    return this.adapter!;
   }
 
   getPreferredFormat(): GPUTextureFormatType {
@@ -235,6 +234,22 @@ export class BrowserGPUAdapter implements IGPUAdapter, IAsNative<GPUDevice> {
         : undefined,
       label: descriptor.label,
     };
+
+    if (descriptor.depthStencil) {
+      gpuDescriptor.depthStencil = {
+        format: descriptor.depthStencil.format as GPUTextureFormat,
+        depthWriteEnabled: descriptor.depthStencil.depthWriteEnabled,
+        depthCompare: descriptor.depthStencil.depthCompare as GPUCompareFunction,
+      };
+    }
+
+    if (descriptor.multisample) {
+      gpuDescriptor.multisample = {
+        count: descriptor.multisample.count,
+        mask: descriptor.multisample.mask,
+        alphaToCoverageEnabled: descriptor.multisample.alphaToCoverageEnabled,
+      };
+    }
 
     if (descriptor.fragment && fragmentModule) {
       gpuDescriptor.fragment = {
